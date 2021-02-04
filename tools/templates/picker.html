@@ -69,7 +69,7 @@
         width: 100%;
       }
 
-      #results .template img {
+      #results .template img, #results .template video {
         background: #dce0e3 center center/contain no-repeat;
         height: 100%;
         object-fit: contain;
@@ -146,7 +146,7 @@
         position: relative;
       }
 
-      #selectionPanel .selectedTemplate img {
+      #selectionPanel .selectedTemplate img, #selectionPanel .selectedTemplate video {
         background: #dce0e3 center center/contain no-repeat;
         height: 100%;
         object-fit: contain;
@@ -202,9 +202,15 @@
         let html = '';
         for(let p in templateSelection) {
           const t = templateSelection[p];
-          html += `<div class="selectedTemplate" onclick="unselect('${t.branchURL}')">
-              <img src="${t.img}">
-            </div>`;
+          if (t.animated) {
+            html += `<div class="selectedTemplate" onclick="unselect('${t.branchURL}')">
+                <video src="${t.media}" autoplay="true" loop="true">
+              </div>`;
+          } else {
+            html += `<div class="selectedTemplate" onclick="unselect('${t.branchURL}')">
+                <img src="${t.media}">
+              </div>`;
+            }
         };
 
         const selectionPanel = document.getElementById('selectionPanel');
@@ -224,31 +230,48 @@
           const resultContainer = document.querySelector('#results');
           resultContainer.innerHTML = '';
           array.forEach(t => {
-            const href = t.rendition.href
+            let href = t.rendition.href
               .replace('\{format\}', 'jpg')
               .replace('\{dimension\}', 'width')
               .replace('\{size\}', t.rendition.maxWidth || 1200);
+
+            if (t.animated) {
+              const animationRoot = t.rendition.href.split('rendition')[0];
+              const version = t.rendition.href.split('/version/')[1].split('/')[0];
+              href = animationRoot + "dcx/" + t.id + "/content/videoRendition.mp4/version/" + version;
+            }
 
             const template = document.createElement('div');
             template.classList.add('template');
             template.setAttribute('data-id', t.branchURL);
 
-            template.innerHTML += `
-              <div class="thumbnail-container">
-                <img src="${href}">
-              </div>
-              <a href="${t.branchURL}" target="_blank">
-                <div class="title">${t.title}</div>
-              </a>`;
+            if (t.animated) {
+              template.innerHTML += `
+                <div class="thumbnail-container">
+                  <video src="${href}" autoplay="true" loop="true">
+                </div>
+                <a href="${t.branchURL}" target="_blank">
+                  <div class="title">${t.title}</div>
+                </a>`;
+            } else {
+              template.innerHTML += `
+                <div class="thumbnail-container">
+                  <img src="${href}">
+                </div>
+                <a href="${t.branchURL}" target="_blank">
+                  <div class="title">${t.title}</div>
+                </a>`;
+            }
 
             template.addEventListener('click', () => {
               if (template.classList.contains('selected')) {
                 unselect(t.branchURL);
               } else {
                 select(t.branchURL, {
-                  img: href,
+                  media: href,
                   title: t.title,
-                  branchURL: t.branchURL
+                  branchURL: t.branchURL,
+                  animated: t.animated
                 });
               }
 
