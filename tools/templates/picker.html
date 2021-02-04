@@ -247,6 +247,8 @@
               .replace('\{dimension\}', 'width')
               .replace('\{size\}', t.rendition.maxWidth || 1200);
 
+            const screenshot = href;
+
             if (t.animated) {
               const animationRoot = t.rendition.href.split('rendition')[0];
               const version = t.rendition.href.split('/version/')[1].split('/')[0];
@@ -285,6 +287,7 @@
               } else {
                 select(t.branchURL, {
                   media: href,
+                  screenshot,
                   title: t.title,
                   branchURL: t.branchURL,
                   animated: t.animated
@@ -319,11 +322,19 @@
 
         row.append(imgCell);
         const img = document.createElement('img');
-        img.src = template.img;
+        img.src = template.screenshot;
         img.alt = template.title;
         img.width = IMG_EXPORT_WIDTH;
 
         imgCell.append(img);
+
+        if (template.animated) {
+          imgCell.append(document.createElement('br'));
+          const link = document.createElement('a');
+          link.href = template.media;
+          link.innerHTML = 'Animation';
+          imgCell.append(link);
+        }
 
         const linkCell = document.createElement('td');
         linkCell.style.border = '1px solid black';
@@ -398,11 +409,5 @@
         <tbody></tbody>
       </table>
     </div>
-    
-    <script>
-      window.addEventListener('DOMContentLoaded', async (event) => {
-        
-      });
-    </script>
   </body>
 </html>
