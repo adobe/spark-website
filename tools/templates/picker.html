@@ -235,6 +235,17 @@
 
         const q = document.getElementById('search');
 
+        if (window.history.pushState) {
+          const searchParams = new URLSearchParams(window.location.search);
+          searchParams.set('q', q.value);
+
+          const url = new URL(window.location.href);
+          url.search = searchParams.toString();
+          window.history.pushState({
+            path: url.href
+          }, '', url.href);
+        }
+        
         const params = {
           q: q.value,
           filters: 'branchURL:*',
@@ -451,5 +462,15 @@
         <tbody></tbody>
       </table>
     </div>
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('q');
+        if (q) {
+          document.getElementById('search').value = q;
+          search();
+        }
+      });
+    </script>
   </body>
 </html>
