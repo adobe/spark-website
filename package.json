@@ -4,7 +4,8 @@
   "description": "Adobe Spark Website",
   "scripts": {
     "test": "karma start karma.config.js",
-    "integration-test": "mocha integration/*.test.js"
+    "integration-test": "mocha integration/*.test.js",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
