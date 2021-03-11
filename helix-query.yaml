@@ -50,6 +50,7 @@ indices:
       - 'express/**/*.(docx|md)'
     exclude:
       - '**/Document.*'
+      - 'express/learn/blog/**'
     target: https://adobe.sharepoint.com/:x:/r/sites/SparkHelix/Shared%20Documents/website/express/query-index.xlsx?d=wc39f807e76884c2eb5b9e5181329ac6e&csf=1&web=1&e=WFpcpD
     properties:
       title:
