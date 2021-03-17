@@ -12,14 +12,9 @@
 /* global expect fetch document */
 /* eslint-env mocha */
 
+import TESTS from './blocks-test-list.js';
+
 const ROOT_PATH = '/blocks';
-const TESTS = [{
-  input: 'input/table-of-contents.1.doc.html',
-  expected: 'expected/table-of-contents.1.block.html',
-}, {
-  input: 'input/table-of-contents.2.doc.html',
-  expected: 'expected/table-of-contents.2.block.html',
-}];
 
 const getFragment = (html) => {
   const template = document.createElement('template');
@@ -40,7 +35,7 @@ const fragmentToString = (fragment) => {
   return trim(html);
 };
 
-describe.only('Generic block tests', () => {
+describe('Generic block tests', () => {
   TESTS.forEach((test) => {
     it(test.input, async () => {
       const req = await fetch(`${ROOT_PATH}/${test.input}`);

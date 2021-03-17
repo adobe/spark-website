@@ -11,8 +11,9 @@
  */
 /* eslint-env mocha */
 
-describe('Make page', () => {
-  it('dummy', () => {
-    // expect(true).to.be.true;
-  });
-});
+// TODO
+// describe('Make page', () => {
+//   it('dummy', () => {
+//     // expect(true).to.be.true;
+//   });
+// });

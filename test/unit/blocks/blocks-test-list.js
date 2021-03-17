@@ -9,11 +9,11 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* eslint-env mocha */
 
-// TODO
-// describe('Template page', () => {
-//   it('dummy', () => {
-//     // expect(true).to.be.true;
-//   });
-// });
+export default [{
+  input: 'input/table-of-contents.1.doc.html',
+  expected: 'expected/table-of-contents.1.block.html',
+}, {
+  input: 'input/table-of-contents.2.doc.html',
+  expected: 'expected/table-of-contents.2.block.html',
+}];
