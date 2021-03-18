@@ -11,9 +11,19 @@
  */
 
 export default [{
+  name: 'Table of Contents - 1 level',
   input: 'input/table-of-contents.1.doc.html',
   expected: 'expected/table-of-contents.1.block.html',
 }, {
+  name: 'Table of Contents - 2 levels',
   input: 'input/table-of-contents.2.doc.html',
   expected: 'expected/table-of-contents.2.block.html',
+}, {
+  name: 'Link Image - basic',
+  input: 'input/link-image.1.doc.html',
+  expected: 'expected/link-image.1.block.html',
+}, {
+  name: 'Link Image - no line breaks',
+  input: 'input/link-image.2.doc.html',
+  expected: 'expected/link-image.2.block.html',
 }];

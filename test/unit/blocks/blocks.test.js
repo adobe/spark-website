@@ -35,9 +35,9 @@ const fragmentToString = (fragment) => {
   return trim(html);
 };
 
-describe('Generic block tests', () => {
+describe('Block tests', () => {
   TESTS.forEach((test) => {
-    it(test.input, async () => {
+    it(test.name, async () => {
       const req = await fetch(`${ROOT_PATH}/${test.input}`);
       let html = await req.text();
 
