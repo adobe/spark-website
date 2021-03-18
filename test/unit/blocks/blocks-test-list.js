@@ -12,18 +12,18 @@
 
 export default [{
   name: 'Table of Contents - 1 level',
-  input: 'input/table-of-contents.1.doc.html',
-  expected: 'expected/table-of-contents.1.block.html',
+  input: 'input/table-of-contents.1level.doc.html',
+  expected: 'expected/table-of-contents.1level.block.html',
 }, {
   name: 'Table of Contents - 2 levels',
-  input: 'input/table-of-contents.2.doc.html',
-  expected: 'expected/table-of-contents.2.block.html',
+  input: 'input/table-of-contents.2levels.doc.html',
+  expected: 'expected/table-of-contents.2levels.block.html',
 }, {
   name: 'Link Image - basic',
-  input: 'input/link-image.1.doc.html',
-  expected: 'expected/link-image.1.block.html',
+  input: 'input/link-image.basic.doc.html',
+  expected: 'expected/link-image.basic.block.html',
 }, {
   name: 'Link Image - no line breaks',
-  input: 'input/link-image.2.doc.html',
-  expected: 'expected/link-image.2.block.html',
+  input: 'input/link-image.nolinebreaks.doc.html',
+  expected: 'expected/link-image.nolinebreaks.block.html',
 }];

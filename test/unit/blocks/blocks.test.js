@@ -11,6 +11,7 @@
  */
 /* global expect fetch document */
 /* eslint-env mocha */
+/* eslint-disable no-unused-expressions */
 
 import TESTS from './blocks-test-list.js';
 
@@ -38,13 +39,20 @@ const fragmentToString = (fragment) => {
 describe('Block tests', () => {
   TESTS.forEach((test) => {
     it(test.name, async () => {
-      const req = await fetch(`${ROOT_PATH}/${test.input}`);
-      let html = await req.text();
+      expect(test.input, 'Missing test "input" definition').to.exist;
+      expect(test.expected, 'Missing test "expected" definition').to.exist;
 
+      let res = await fetch(`${ROOT_PATH}/${test.input}`);
+      expect(res.ok, `Missing test "input" file: ${test.input}`).to.be.true;
+
+      let html = await res.text();
       const doc = getFragment(html);
 
-      html = await (await fetch(`${ROOT_PATH}/${test.expected}`)).text();
-      const $expected = getFragment(html);
+      res = await fetch(`${ROOT_PATH}/${test.expected}`);
+      expect(res.ok, `Missing test "expected" file: ${test.expected}`).to.be.true;
+
+      html = await res.text();
+      const expected = getFragment(html);
 
       const block = doc.querySelector('main > div');
 
@@ -54,7 +62,7 @@ describe('Block tests', () => {
       const mod = await import(`/express/blocks/${blockName}/${blockName}.js`);
       mod.default(block, blockName, doc);
 
-      expect(fragmentToString(block)).to.be.equal(fragmentToString($expected));
+      expect(fragmentToString(block)).to.be.equal(fragmentToString(expected));
     });
   });
 });
