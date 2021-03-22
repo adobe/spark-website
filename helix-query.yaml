@@ -38,6 +38,10 @@ indices:
         select: head > meta[property="og:url"]
         value: |
           match(attribute(el, 'content'), 'https:\/\/[^/]+(\/.*)')
+      category:
+        select: head > meta[name="category"]
+        values: |
+          attribute(el, 'content')
       tags:
         select: head > meta[property="article:tag"]
         values: |
