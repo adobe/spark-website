@@ -46,6 +46,10 @@ indices:
         select: head > meta[property="article:tag"]
         values: |
           attribute(el, 'content')
+      lastModified:
+        select: none
+        value: |
+          parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
 
   website: &default
     source: html
@@ -73,6 +77,10 @@ indices:
         select: head > meta[property="og:url"]
         value: |
           match(attribute(el, 'content'), 'https:\/\/[^/]+(\/.*)')
+      lastModified:
+        select: none
+        value: |
+          parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
 
   germany:
     <<: *default
