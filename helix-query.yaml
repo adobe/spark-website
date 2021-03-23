@@ -45,7 +45,7 @@ indices:
       tags:
         select: head > meta[property="article:tag"]
         values: |
-          match(attribute(el, 'content'), '([^\s]+)')
+          attribute(el, 'content')
 
   website: &default
     source: html
