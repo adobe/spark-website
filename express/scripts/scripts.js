@@ -180,7 +180,7 @@ function decorateBlocks() {
     if ($section) {
       $section.classList.add(`${blockName}-container`.replaceAll('--', '-'));
     }
-    const blocksWithOptions = ['checker-board', 'template-list', 'steps', 'cards', 'quotes', 'page-list'];
+    const blocksWithOptions = ['checker-board', 'template-list', 'steps', 'cards', 'quotes', 'page-list', 'columns'];
     blocksWithOptions.forEach((b) => {
       if (blockName.startsWith(`${b}-`)) {
         const options = blockName.substring(b.length + 1).split('-').filter((opt) => !!opt);
@@ -279,13 +279,15 @@ function postLCP() {
 }
 
 async function fetchAuthorImage($image, author) {
-  const resp = await fetch(`/blog/authors/${toClassName(author)}.plain.html`);
+  const resp = await fetch(`/express/learn/blog/authors/${toClassName(author)}.plain.html`);
   const main = await resp.text();
-  const $div = createTag('div');
-  $div.innerHTML = main;
-  const $img = $div.querySelector('img');
-  const src = $img.src.replace('width=2000', 'width=200');
-  $image.src = src;
+  if (resp.status === 200) {
+    const $div = createTag('div');
+    $div.innerHTML = main;
+    const $img = $div.querySelector('img');
+    const src = $img.src.replace('width=2000', 'width=200');
+    $image.src = src;
+  }
 }
 
 function decorateHero() {
@@ -749,8 +751,9 @@ export function unwrapBlock($block) {
   const $elems = [...$section.children];
   const $blockSection = createTag('div');
   const $postBlockSection = createTag('div');
-  $section.parentNode.appendChild($blockSection);
-  $section.parentNode.appendChild($postBlockSection);
+  const $nextSection = $section.nextSibling;
+  $section.parentNode.insertBefore($blockSection, $nextSection);
+  $section.parentNode.insertBefore($postBlockSection, $nextSection);
 
   let $appendTo;
   $elems.forEach(($e) => {
