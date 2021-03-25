@@ -20,10 +20,29 @@ main .columns a > p:empty {
   display: none;
 }
 
+main .columns > div span.num {
+  position:relative;
+  font-weight: 800;
+  font-size: 36px;
+  line-height: 39px;
+  top:0;
+  margin-right: 12px;
+}
+
+main .columns > div span.num + * {
+  display:inline;
+}
+
+main .columns.center > div {
+  align-items: center;
+}
+
 @media (min-width:900px) {
     main .columns > div {
         flex-direction: row;
-    }    
+        align-items: flex-start;
+        text-align: left;
+    }
 
     main .section-wrapper div.columns > div > div {
       width: 50%;
@@ -33,4 +52,10 @@ main .columns a > p:empty {
     main .section-wrapper div.columns > div > div * {
       text-align: left;
     }
+
+  main .columns > div span.num {
+    font-size: 22px;
+    line-height: 29px;
+    display: block;
+  }
 }

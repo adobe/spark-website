@@ -98,13 +98,13 @@ export function addBlockClasses($block, classNames) {
 //   });
 // }
 
-function decorateHeader() {
+function decorateHeaderAndFooter() {
   const $header = document.querySelector('header');
 
   /* init header with placeholder */
 
   $header.innerHTML = `
-  <div class="placeholder">
+  <div id="feds-header" class="placeholder">
     <div class="mobile">
       <div class="hamburger"></div>
       <div class="logo"><img src="/express/gnav-placeholder/adobe-logo.svg"></div>
@@ -134,6 +134,11 @@ function decorateHeader() {
         <span class="crumb">Home</span> / <span class="crumb">Adobe Creative Cloud</span>
       </div>
     </div>
+  `;
+
+  document.querySelector('footer').innerHTML = `
+    <div id="feds-footer"></div>
+    <div class="evidon-notice-link"></div>
   `;
 }
 
@@ -172,6 +177,41 @@ function decorateDoMoreEmbed() {
   });
 }
 
+function resolveFragments() {
+  Array.from(document.querySelectorAll('main > div div'))
+    .filter(($cell) => /^\[[A-Za-z0-9 -_]+\]$/mg.test($cell.textContent))
+    .forEach(($cell) => {
+      const marker = $cell.textContent
+        .substring(1, $cell.textContent.length - 1)
+        .toLocaleLowerCase();
+      // find the fragment with the marker
+      const $marker = Array.from(document.querySelectorAll('main > div h3'))
+        .find(($title) => $title.textContent.toLocaleLowerCase() === marker);
+      if (!$marker) {
+        console.log(`no fragment with marker "${marker}" found`);
+        return;
+      }
+      let $fragment = $marker.closest('main > div');
+      const $markerContainer = $marker.parentNode;
+      if ($markerContainer.children.length === 1) {
+        // empty section with marker, remove and use content from next section
+        const $emptyFragment = $markerContainer.parentNode;
+        $fragment = $emptyFragment.nextElementSibling;
+        $emptyFragment.remove();
+      }
+      if (!$fragment) {
+        console.log(`no content found for fragment "${marker}"`);
+        return;
+      }
+      setTimeout(() => {
+        $cell.innerHTML = '';
+        Array.from($fragment.children).forEach(($elem) => $cell.appendChild($elem));
+        $fragment.remove();
+        console.log(`fragment "${marker}" resolved`);
+      }, 500);
+    });
+}
+
 function decorateBlocks() {
   document.querySelectorAll('main div.section-wrapper > div > div').forEach(async ($block) => {
     const classes = Array.from($block.classList.values());
@@ -192,7 +232,9 @@ function decorateBlocks() {
     $block.classList.add('block');
     import(`/express/blocks/${blockName}/${blockName}.js`)
       .then((mod) => {
-        mod.default($block, blockName, document);
+        if (mod.default) {
+          mod.default($block, blockName, document);
+        }
       })
       .catch((err) => console.log(`failed to load module for ${blockName}`, err));
 
@@ -208,6 +250,7 @@ export function loadScript(url, callback, type) {
   }
   $head.append($script);
   $script.onload = callback;
+  return $script;
 }
 
 // async function loadLazyFooter() {
@@ -266,8 +309,9 @@ function postLCP() {
   const martechUrl = '/express/scripts/martech.js';
   loadCSS('/express/styles/lazy-styles.css');
   decorateBlocks();
+  resolveFragments();
   // loadLazyFooter();
-  if (!(window.location.search === '?nomartech' || document.querySelector(`head script[src="${martechUrl}"]`))) {
+  if (!(window.location.search === '?nomartech' || window.location.hostname === 'localhost' || document.querySelector(`head script[src="${martechUrl}"]`))) {
     let ms = 2000;
     const usp = new URLSearchParams(window.location.search);
     const delay = usp.get('delay');
@@ -555,6 +599,7 @@ export function unwrapBlock($block) {
 function splitSections() {
   document.querySelectorAll('main > div > div').forEach(($block) => {
     const blocksToSplit = ['template-list', 'layouts', 'blog-posts'];
+
     if (blocksToSplit.includes($block.className)) {
       unwrapBlock($block);
     }
@@ -576,7 +621,7 @@ async function decoratePage() {
   await decorateTesting();
   splitSections();
   wrapSections('main>div');
-  decorateHeader();
+  decorateHeaderAndFooter();
   decorateHero();
   decorateButtons();
   fixIcons();

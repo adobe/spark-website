@@ -64,7 +64,7 @@ const langs = {
   fr: 'fr-FR',
   de: 'de-DE',
   it: 'it-IT',
-  da: 'da-DK',
+  dk: 'da-DK',
   es: 'es-ES',
   fi: 'fi-FI',
   jp: 'ja-JP',
@@ -102,6 +102,20 @@ window.digitalData = {
   },
 };
 
+window.fedsConfig = {
+  ...window.fedsConfig,
+  locale: language,
+  content: {
+    experience: 'cc-express/spark-gnav',
+  },
+};
+
+window.adobeid = {
+  client_id: 'spark-helix',
+  scope: 'AdobeID,openid',
+  locale: language,
+};
+
 function textToName(text) {
   const splits = text.toLowerCase().split(' ');
   const camelCase = splits.map((s, i) => (i ? s.charAt(0).toUpperCase() + s.substr(1) : s)).join('');
@@ -134,6 +148,11 @@ function decorateAnalyticsEvents() {
       trackButtonClick($a);
     });
   });
+}
+
+if (new URLSearchParams(window.location.search).get('gnav') !== 'false') {
+  loadScript('https://www.adobe.com/etc.clientlibs/globalnav/clientlibs/base/feds.js').id = 'feds-script';
+  loadScript('https://static.adobelogin.com/imslib/imslib.min.js');
 }
 
 loadScript('https://www.adobe.com/marketingtech/main.min.js');
