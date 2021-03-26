@@ -74,7 +74,7 @@ indices:
         value: |
           parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
       shortTitle:
-        select: head > meta[property="short-title"]
+        select: head > meta[name="short-title"]
         value: |
           attribute(el, 'content')
 
