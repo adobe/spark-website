@@ -1,5 +1,5 @@
 main .columns {
-  margin-top: 56px;
+  margin-top: 40px;
 }
 
 main .columns > div {
@@ -48,25 +48,29 @@ main .columns.middle > div {
 }
 
 @media (min-width:900px) {
-    main .columns > div {
-        flex-direction: row;
-        text-align: left;
-    }
+  main .columns {
+    margin-top: 56px;
+  }
 
-    main .section-wrapper div.columns > div > div {
-      width: 50%;
-      padding: 10px;
-    }
-
-    main .section-wrapper div.columns.middle > div > div {
-      width: auto;
-      text-align: center;
-      padding: 10px;
-    }
-
-    main .section-wrapper div.columns > div > div * {
+  main .columns > div {
+      flex-direction: row;
       text-align: left;
-    }
+  }
+
+  main .section-wrapper div.columns > div > div {
+    width: 50%;
+    padding: 10px;
+  }
+
+  main .section-wrapper div.columns.middle > div > div {
+    width: auto;
+    text-align: center;
+    padding: 10px;
+  }
+
+  main .section-wrapper div.columns > div > div * {
+    text-align: left;
+  }
 
   main .columns > div span.num {
     font-size: 22px;
