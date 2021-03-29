@@ -295,9 +295,9 @@ main .hero.hero-noimage a:any-link{
 
 main .hero h1 {
     font-size: 45px;
+    line-height: 49px;
     font-weight: 900;
     margin: 0;
-    line-height: 49px;
 }
 
 main .hero h2 {
@@ -366,13 +366,14 @@ main .hero a:any-link {
 @media (min-width:600px) {
     main .hero h1 {
         font-size: 60px;
-        line-height: 64px;
+        line-height: 66px;
     }
 
     main .hero h2 {
         font-size: 24px;
         line-height: 28px;
         margin-bottom: 40px;
+        margin: 32px 80px
     }
 
     main .hero h5 {
@@ -440,15 +441,15 @@ main .section-wrapper > div:empty {
 }
 
 main .section-wrapper h1 {
-    font-size: 45px;
-    line-height: 49px;
+    font-size: 36px;
+    line-height: 40px;
     margin: 0;
     font-weight: 800;
 }
 
 main .section-wrapper h2 {
-    font-size: 36px;
-    line-height: 40px;
+    font-size: 28px;
+    line-height: 32px;
     margin: 0;
     font-weight: 800;
 }
@@ -674,9 +675,18 @@ main .section-wrapper .hero {
 }
 
 @media(min-width:1200px) {
-  main .section-wrapper h1 {
+  main .hero h1 {
     font-size: 60px;
-    line-height: 64px;
+    line-height: 66px;
+  }
+
+  main .hero .columns {
+    padding-top: 0;
+  }
+
+  main .section-wrapper h1 {
+    font-size: 35px;
+    line-height: 49px;
   }
 }
 
