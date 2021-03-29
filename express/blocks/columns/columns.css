@@ -1,5 +1,5 @@
 main .columns {
-  margin-top: 70px;
+  margin-top: 56px;
 }
 
 main .columns > div {
@@ -41,6 +41,12 @@ main .columns.center > div {
   align-items: center;
 }
 
+main .columns.middle > div {
+  display: flex;
+  margin: auto;
+  justify-content: center;
+}
+
 @media (min-width:900px) {
     main .columns > div {
         flex-direction: row;
@@ -49,6 +55,12 @@ main .columns.center > div {
 
     main .section-wrapper div.columns > div > div {
       width: 50%;
+      padding: 10px;
+    }
+
+    main .section-wrapper div.columns.middle > div > div {
+      width: auto;
+      text-align: center;
       padding: 10px;
     }
 

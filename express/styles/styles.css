@@ -663,12 +663,6 @@ main .section-wrapper .hero {
     text-align: unset;
   }
 
-  main .section-wrapper a.button:any-link {
-    margin-left: 0;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
   main .section-wrapper.cards-container {
     background-color: unset;
   }
