@@ -9,7 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* global window, navigator, document, fetch, performance, PerformanceObserver */
+/* global window, navigator, document, fetch, performance, PerformanceObserver,
+   localStorage, FontFace, sessionStorage */
 /* eslint-disable no-console */
 
 export function toClassName(name) {
@@ -42,11 +43,11 @@ function getMeta(name) {
 }
 
 export function getIcon(icon, alt = icon) {
-  console.log(icon);
   const symbols = ['adobe', 'adobe-red', 'facebook', 'instagram', 'pinterest',
     'linkedin', 'twitter', 'youtube', 'discord', 'behance', 'creative-cloud',
     'hamburger', 'adchoices', 'play', 'not-found', 'snapchat', 'learn', 'magicwand',
-    'upload', 'resize', 'download', 'creativecloud'];
+    'upload', 'resize', 'download', 'creativecloud', 'shapes', 'users', 'color', 'stickers', 'landscape',
+    'globe', 'chevron'];
   if (symbols.includes(icon)) {
     return `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-${icon}">
       <use href="/express/icons.svg#${icon}"></use>
@@ -62,15 +63,28 @@ export function getIconElement(icon) {
   return ($div.firstChild);
 }
 
+export function linkPicture($picture) {
+  const $nextSib = $picture.parentNode.nextElementSibling;
+  if ($nextSib) {
+    const $a = $nextSib.querySelector('a');
+    if ($a && $a.textContent.startsWith('https://')) {
+      $a.innerHTML = '';
+      $a.className = '';
+      $a.appendChild($picture);
+    }
+  }
+}
+
 export function linkImage($elem) {
   const $a = $elem.querySelector('a');
-  const $parent = $a.closest('div');
-  $a.remove();
-  const picture = $parent.innerHTML;
-  $parent.innerHTML = '';
-  $parent.appendChild($a);
-  $a.innerHTML = picture;
-  $a.className = '';
+  if ($a) {
+    const $parent = $a.closest('div');
+    $a.remove();
+    $a.className = '';
+    $a.innerHTML = '';
+    $a.append(...$parent.childNodes);
+    $parent.append($a);
+  }
 }
 
 function wrapSections(element) {
@@ -216,23 +230,55 @@ function getCountry() {
   return (country.split('_')[0]);
 }
 
+export function getLanguage(locale) {
+  const langs = {
+    us: 'en-US',
+    fr: 'fr-FR',
+    de: 'de-DE',
+    it: 'it-IT',
+    dk: 'da-DK',
+    es: 'es-ES',
+    fi: 'fi-FI',
+    jp: 'ja-JP',
+    kr: 'ko-KR',
+    no: 'nb-NO',
+    nl: 'nl-NL',
+    br: 'pt-BR',
+    se: 'sv-SE',
+    tw: 'zh-Hant-TW',
+    cn: 'zh-Hans-CN',
+  };
+
+  let language = langs[locale];
+  if (!language) language = 'en-US';
+
+  return language;
+}
+
 export async function getOffer(offerId, countryOverride) {
   let country = getCountry();
   if (countryOverride) country = countryOverride;
   console.log(country);
-  const currency = getCurrency(country);
+  if (!country) country = 'us';
+  let currency = getCurrency(country);
+  if (!currency) {
+    country = 'us';
+    currency = 'USD';
+  }
   const resp = await fetch('/express/system/offers.json');
   const json = await resp.json();
   const upperCountry = country.toUpperCase();
-  const offer = json.data.find((e) => (e.o === offerId) && (e.c === upperCountry));
+  let offer = json.data.find((e) => (e.o === offerId) && (e.c === upperCountry));
+  if (!offer) offer = json.data.find((e) => (e.o === offerId) && (e.c === 'US'));
 
   if (offer) {
+    const lang = getLanguage(getLocale(window.location)).split('-')[0];
     const unitPrice = offer.p;
     const currencyFormatter = new Intl.NumberFormat(navigator.lang, { style: 'currency', currency });
     const unitPriceCurrencyFormatted = currencyFormatter.format(unitPrice);
-    const commerceURL = `https://commerce.adobe.com/checkout?cli=spark&co=${country}&items%5B0%5D%5Bid%5D=${offerId}&items%5B0%5D%5Bcs%5D=0&rUrl=https%3A%2F%2Fspark.adobe.com%2Fsp%2F`;
+    const commerceURL = `https://commerce.adobe.com/checkout?cli=spark&co=${country}&items%5B0%5D%5Bid%5D=${offerId}&items%5B0%5D%5Bcs%5D=0&rUrl=https%3A%2F%2Fspark.adobe.com%2Fsp%2F&lang=${lang}`;
     return {
-      country, currency, unitPrice, unitPriceCurrencyFormatted, commerceURL,
+      country, currency, unitPrice, unitPriceCurrencyFormatted, commerceURL, lang,
     };
   }
   return {};
@@ -254,65 +300,101 @@ export function addBlockClasses($block, classNames) {
 //   });
 // }
 
-function decorateHeaderAndFooter() {
-  const $header = document.querySelector('header');
-
-  /* init header */
-  const locale = getLocale(window.location);
-
-  if (locale === 'us') {
-    $header.innerHTML = `
-    <div id="feds-header">
+function getGnavPlaceholder(nav) {
+  let html = `<div id="feds-header">
     </div>
     <div id="header-placeholder" class="placeholder">
     <div class="mobile">
       <div class="hamburger"></div>
       <div class="logo"><img src="/express/gnav-placeholder/adobe-logo.svg"></div>
-      <div class="signin">Sign In</div>
+      <div class="signin">${nav.signIn}</div>
     </div>
     <div class="desktop">
       <div class="top">
         <div class="left">
           <div class="logo"><img src="/express/gnav-placeholder/adobe-logo.svg"><span class="adobe">Adobe</span></div>
-          <div class="section">
-            <span>Adobe Spark</span>
-            <span class="drop">Features</span>
-            <span class="drop">Create</span>
-            <span class="drop">Discover</span>
-            <span class="drop">Learn</span>
-            <span>Compare plans</span>
-            <span><a href="#" class="button primary">Start now</a></span>
-          </div>
+          <div class="section">`;
+
+  nav.top.forEach((e) => {
+    const selected = e.selected ? 'selected' : '';
+    if (e.type === 'nodrop') {
+      html += `<span class="${selected}">${e.text}</span>`;
+    } else if (e.type === 'button') {
+      html += `<span><a href="#" class="button primary">${e.text}</a></span>`;
+    } else {
+      html += `<span class="drop ${selected}">${e.text}</span>`;
+    }
+  });
+
+  html += `</div>
         </div>
         <div class="right">
           <div class="search"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" focusable="false">
           <path d="M14 2A8 8 0 0 0 7.4 14.5L2.4 19.4a1.5 1.5 0 0 0 2.1 2.1L9.5 16.6A8 8 0 1 0 14 2Zm0 14.1A6.1 6.1 0 1 1 20.1 10 6.1 6.1 0 0 1 14 16.1Z"></path>
       </svg></div>
-          <div class="signing">Sign In</div>
+          <div class="signing">${nav.signIn}</div>
         </div>
       </div>
     </div>`;
+  return (html);
+}
+
+function decorateHeaderAndFooter() {
+  const $header = document.querySelector('header');
+
+  $header.addEventListener('click', (event) => {
+    if (event.target.id === 'feds-topnav') {
+      const root = window.location.href.split('/express/')[0];
+      window.location.href = `${root}/express/`;
+    }
+  });
+
+  /* init header */
+  const locale = getLocale(window.location);
+
+  if (locale === 'us') {
+    const nav = {
+      signIn: 'Sign In',
+      top: [
+        {
+          text: 'Adobe Spark',
+          type: 'nodrop',
+        },
+        {
+          text: 'Features',
+        },
+        {
+          text: 'Create',
+        },
+        {
+          text: 'Discover',
+        },
+        {
+          text: 'Learn',
+        },
+        {
+          text: 'Compare Plans',
+          type: 'nodrop',
+        },
+        {
+          text: 'Start now',
+          type: 'button',
+        },
+      ],
+    };
+    if (window.location.pathname === '/express/') nav.top[0].selected = true;
+    if (window.location.pathname.startsWith('/express/feature')) nav.top[1].selected = true;
+    if (window.location.pathname.startsWith('/express/create')) nav.top[2].selected = true;
+    if (window.location.pathname.startsWith('/express/discover')) nav.top[3].selected = true;
+    if (window.location.pathname.startsWith('/express/learn')) nav.top[4].selected = true;
+    if (window.location.pathname.startsWith('/express/pricing')) nav.top[5].selected = true;
+    const html = getGnavPlaceholder(nav);
+    $header.innerHTML = html;
   } else {
-    $header.innerHTML = `
-    <div id="feds-header">
-    </div>
-    <div id="header-placeholder" class="placeholder">
-    <div class="mobile">
-      <div class="hamburger"></div>
-      <div class="logo"><img src="/express/gnav-placeholder/adobe-logo.svg"></div>
-      <div class="signin">Sign In</div>
-    </div>
-    <div class="desktop">
-      <div class="top">
-        <div class="left">
-          <div class="logo"><img src="/express/gnav-placeholder/adobe-logo.svg"><span class="adobe">Adobe</span></div>
-          <div class="section">
-          </div>
-        </div>
-        <div class="right">
-        </div>
-      </div>
-    </div>`;
+    $header.innerHTML = getGnavPlaceholder({
+      signIn: 'Sign In',
+      top: [],
+    });
   }
 
   document.querySelector('footer').innerHTML = `
@@ -358,7 +440,8 @@ function decorateDoMoreEmbed() {
 
 function resolveFragments() {
   Array.from(document.querySelectorAll('main > div div'))
-    .filter(($cell) => /^\[[A-Za-z0-9 -_]+\]$/mg.test($cell.textContent))
+    .filter(($cell) => $cell.childElementCount === 0)
+    .filter(($cell) => /^\[[A-Za-z0-9 -_—]+\]$/mg.test($cell.textContent))
     .forEach(($cell) => {
       const marker = $cell.textContent
         .substring(1, $cell.textContent.length - 1)
@@ -386,6 +469,7 @@ function resolveFragments() {
       setTimeout(() => {
         $cell.innerHTML = '';
         Array.from($fragment.children).forEach(($elem) => $cell.appendChild($elem));
+        $marker.remove();
         $fragment.remove();
         console.log(`fragment "${marker}" resolved`);
       }, 500);
@@ -400,7 +484,8 @@ function decorateBlocks() {
     if ($section) {
       $section.classList.add(`${blockName}-container`.replaceAll('--', '-'));
     }
-    const blocksWithOptions = ['checker-board', 'template-list', 'steps', 'cards', 'quotes', 'page-list', 'columns'];
+    const blocksWithOptions = ['checker-board', 'template-list', 'steps', 'cards', 'quotes', 'page-list',
+      'columns', 'show-section-only', 'image-list', 'feature-list'];
     blocksWithOptions.forEach((b) => {
       if (blockName.startsWith(`${b}-`)) {
         const options = blockName.substring(b.length + 1).split('-').filter((opt) => !!opt);
@@ -492,15 +577,42 @@ export function readBlockConfig($block) {
   return config;
 }
 
+async function loadFont(name, url, weight) {
+  const font = new FontFace(name, url, { weight });
+  const fontLoaded = await font.load();
+  return (fontLoaded);
+}
+
+async function loadFonts() {
+  try {
+    /* todo promise.All */
+    const f900 = await loadFont('adobe-clean', 'url("https://use.typekit.net/af/b0c5f5/00000000000000003b9b3f85/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3")', 400);
+    const f400 = await loadFont('adobe-clean', 'url("https://use.typekit.net/af/ad2a79/00000000000000003b9b3f8c/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n9&v=3")', 900);
+    const f700 = await loadFont('adobe-clean', 'url("https://use.typekit.net/af/97fbd1/00000000000000003b9b3f88/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3")', 700);
+    document.fonts.add(f900);
+    document.fonts.add(f400);
+    document.fonts.add(f700);
+    sessionStorage.setItem('helix-fonts', 'loaded');
+  } catch (err) {
+    /* something went wrong */
+    console.log(err);
+  }
+  document.body.classList.add('font-loaded');
+}
+
 function postLCP() {
+  loadFonts();
   const martechUrl = '/express/scripts/martech.js';
   loadCSS('/express/styles/lazy-styles.css');
   loadBlocks();
   resolveFragments();
+
+  const usp = new URLSearchParams(window.location.search);
+  const martech = usp.get('martech');
+
   // loadLazyFooter();
-  if (!(window.location.search === '?nomartech' || document.querySelector(`head script[src="${martechUrl}"]`))) {
+  if (!(martech === 'off' || document.querySelector(`head script[src="${martechUrl}"]`))) {
     let ms = 2000;
-    const usp = new URLSearchParams(window.location.search);
     const delay = usp.get('delay');
     if (delay) ms = +delay;
     setTimeout(() => {
@@ -541,7 +653,7 @@ function decorateHero() {
         const tagString = getMeta('article:tag');
         // eslint-disable-next-line no-unused-vars
         const tags = tagString.split(',');
-        $eyebrow.innerHTML = 'Content & Social Marketing';
+        $eyebrow.innerHTML = getMeta('category');
         // $eyebrow.innerHTML = tags[0];
         $blogHeader.append($eyebrow);
         $blogHeader.append($h1);
@@ -592,7 +704,7 @@ function decorateButtons() {
     if ($block) {
       blockName = $block.className;
     }
-    if (!noButtonBlocks.includes(blockName)) {
+    if (!noButtonBlocks.includes(blockName) && ($a.href !== $a.textContent)) {
       const $up = $a.parentElement;
       const $twoup = $a.parentElement.parentElement;
       if (!$a.querySelector('img')) {
@@ -652,8 +764,9 @@ async function checkTesting(url) {
 async function decorateTesting() {
   let runTest = true;
   // let reason = '';
-
-  if (await checkTesting(window.location.href)) {
+  const usp = new URLSearchParams(window.location.search);
+  const martech = usp.get('martech');
+  if ((await checkTesting(window.location.href) && (martech !== 'off') && (martech !== 'delay')) || martech === 'rush') {
     // eslint-disable-next-line no-console
     console.log('rushing martech');
     loadScript('/express/scripts/martech.js', null, 'module');
@@ -764,7 +877,7 @@ function fixIcons() {
     if (alt) {
       const lowerAlt = alt.toLowerCase();
       if (lowerAlt.includes('icon:')) {
-        const icon = lowerAlt.split('icon:')[1].trim().split(' ')[0];
+        const icon = lowerAlt.split('icon:')[1].trim().replace(/\s/gm, '-');
         const $picture = $img.closest('picture');
         $picture.parentElement.replaceChild(getIconElement(icon), $picture);
       }
@@ -805,12 +918,176 @@ function splitSections() {
   });
 }
 
+function supportsWebp() {
+  if (window.name.includes('nowebp')) return false;
+  if (window.name.includes('webp')) return true;
+
+  if (window.webpSupport === undefined) {
+    window.webpSupport = true;
+    const $canvas = document.createElement('canvas');
+    if ($canvas.getContext && $canvas.getContext('2d')) {
+      window.webpSupport = $canvas.toDataURL('image/webp').startsWith('data:image/webp');
+    } else {
+      window.webpSupport = false;
+    }
+  }
+  return (window.webpSupport);
+}
+
+export function getOptimizedImageURL(src) {
+  const url = new URL(src, window.location.href);
+  let result = src;
+  const { pathname, search } = url;
+  if (pathname.includes('media_')) {
+    const usp = new URLSearchParams(search);
+    usp.delete('auto');
+    if (!supportsWebp()) {
+      if (pathname.endsWith('.png')) {
+        usp.set('format', 'png');
+      } else if (pathname.endsWith('.gif')) {
+        usp.set('format', 'gif');
+      } else {
+        usp.set('format', 'pjpg');
+      }
+    } else {
+      usp.set('format', 'webply');
+    }
+    result = `${src.split('?')[0]}?${usp.toString()}`;
+  }
+  return (result);
+}
+
+function resetAttribute($elem, attrib) {
+  const src = $elem.getAttribute(attrib);
+  if (src) {
+    const oSrc = getOptimizedImageURL(src);
+    if (oSrc !== src) {
+      $elem.setAttribute(attrib, oSrc);
+    }
+  }
+}
+
+function webpPolyfill() {
+  document.querySelectorAll('img').forEach(($img) => {
+    resetAttribute($img, 'src');
+  });
+  document.querySelectorAll('picture source').forEach(($source) => {
+    resetAttribute($source, 'srcset');
+  });
+}
+
 function setTheme() {
   const theme = getMeta('theme');
   if (theme) {
     const themeClass = toClassName(theme);
-    const $main = document.querySelector('main');
-    $main.classList.add(themeClass);
+    const $body = document.body;
+    $body.classList.add(themeClass);
+  }
+}
+
+function decorateLinkedPictures() {
+  /* thanks to word online */
+  document.querySelectorAll('main picture').forEach(($picture) => {
+    if (!$picture.closest('div.block')) {
+      linkPicture($picture);
+    }
+  });
+}
+
+function decorateSocialIcons() {
+  document.querySelectorAll('main a').forEach(($a) => {
+    if ($a.href === $a.textContent) {
+      let icon = '';
+      if ($a.href.startsWith('https://www.instagram.com')) {
+        icon = 'instagram';
+      }
+      if ($a.href.startsWith('https://twitter.com')) {
+        icon = 'twitter';
+      }
+      if ($a.href.startsWith('https://www.pinterest.')) {
+        icon = 'pinterest';
+      }
+      if ($a.href.startsWith('https://www.facebook.')) {
+        icon = 'facebook';
+      }
+      if ($a.href.startsWith('https://www.linkedin.com')) {
+        icon = 'linkedin';
+      }
+      if ($a.href.startsWith('https://www.youtube.com')) {
+        icon = 'youtube';
+      }
+      const $parent = $a.parentElement;
+      if (!icon && $parent.previousElementSibling && $parent.previousElementSibling.classList.contains('social-links')) {
+        icon = 'globe';
+      }
+
+      if (icon) {
+        $a.innerHTML = '';
+        const $icon = getIconElement(icon);
+        $icon.classList.add('social');
+        $a.appendChild($icon);
+        if ($parent.previousElementSibling && $parent.previousElementSibling.classList.contains('social-links')) {
+          $parent.previousElementSibling.appendChild($a);
+          $parent.remove();
+        } else {
+          $parent.classList.add('social-links');
+        }
+      }
+    }
+  });
+}
+
+export function getHelixEnv() {
+  let envName = localStorage.getItem('helix-env');
+  if (!envName) envName = 'prod';
+  const envs = {
+    stage: {
+      commerce: 'commerce-stg.adobe.com',
+      adminconsole: 'stage.adminconsole.adobe.com',
+      spark: 'stage.adobeprojectm.com',
+    },
+    prod: {
+
+    },
+  };
+  const env = envs[envName];
+  if (env) {
+    env.name = envName;
+  }
+  return env;
+}
+
+function displayOldLinkWarning() {
+  if (window.location.hostname.includes('localhost') || window.location.hostname.includes('.hlx.page')) {
+    document.querySelectorAll('main a[href^="https://spark.adobe.com/"]').forEach(($a) => {
+      const url = new URL($a.href);
+      if (!(url.pathname.endsWith('/sp/') || url.pathname.endsWith('/sp/login') || url.pathname === '/'
+      || url.pathname.startsWith('/tools/') || url.pathname.startsWith('/page/')
+      || url.pathname.startsWith('/post/') || url.pathname.startsWith('/video/')
+      || url.pathname.startsWith('/classroom/'))) {
+        console.log(`old link: ${$a}`);
+        $a.style.border = '10px solid red';
+      }
+    });
+  }
+}
+
+function displayEnv() {
+  const usp = new URLSearchParams(window.location.search);
+  if (usp.has('helix-env')) {
+    const env = usp.get('helix-env');
+    if (env) {
+      localStorage.setItem('helix-env', env);
+    } else {
+      localStorage.removeItem('helix-env');
+    }
+  }
+
+  const env = localStorage.getItem('helix-env');
+  if (env) {
+    const $helixEnv = createTag('div', { class: 'helix-env' });
+    $helixEnv.innerHTML = env + (getHelixEnv(env) ? '' : ' [not found]');
+    document.body.appendChild($helixEnv);
   }
 }
 
@@ -818,33 +1095,28 @@ async function decoratePage() {
   setTemplate();
   setTheme();
   await decorateTesting();
+  if (sessionStorage.getItem('helix-font') === 'loaded') {
+    loadFonts();
+  }
   splitSections();
-  wrapSections('main>div');
+  wrapSections('main > div');
   decorateHeaderAndFooter();
   decorateHero();
   decorateButtons();
   fixIcons();
+  webpPolyfill();
   decorateBlocks();
   decorateDoMoreEmbed();
+  decorateLinkedPictures();
+  decorateSocialIcons();
   setLCPTrigger();
+  displayEnv();
+  displayOldLinkWarning();
   document.body.classList.add('appear');
 }
 
 window.spark = {};
 decoratePage();
-
-if (document.referrer) {
-  const referrer = new URL(document.referrer);
-  const redirectingHosts = ['www.adobe.com', 'www.stage.adobe.com', 'spark-website--adobe.hlx.live'];
-  if (redirectingHosts.includes(referrer.hostname)
-  && getLocale(referrer) !== getLocale(window.location)) {
-    if (!getCookie('international')) {
-      const refLocale = getLocale(referrer);
-      console.log(`setting international based on redirect to: ${refLocale}`);
-      document.cookie = `international=${refLocale}; path=/`;
-    }
-  }
-}
 
 /* performance instrumentation */
 

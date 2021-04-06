@@ -11,3 +11,42 @@
  */
 /* global window fetch document */
 /* eslint-disable import/named, import/extensions */
+.embed {
+    margin-top: 64px;
+    max-width: 100%;
+    max-height: 600px;
+    width: unset;
+  }
+  
+  .embed + * {
+    margin-top: 64px;
+  }
+  
+  .embed + p.legend {
+    margin-top: 16px;
+  }
+
+  .embed img {
+    max-width: 100%;
+  }
+
+  .embed-soundcloud > iframe {
+    height: 200px ! important;
+  }
+
+  .post-page main>div.post-body>.images, .post-page main>div.post-body>.embed {
+    text-align: center;
+  }
+
+  .post-page main>div.post-body>.embed {
+    max-width: 800px;
+  }
+
+  .post-page main>div.post-body>.embed-instagram {
+    max-width: fit-content;
+  }
+
+  .post-page main>div.post-body>.embed-twitter {
+    max-height: unset;
+  }
+  

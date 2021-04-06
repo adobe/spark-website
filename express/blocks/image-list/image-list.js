@@ -11,25 +11,14 @@
  */
 /* global */
 
-import { createTag } from '../../scripts/scripts.js';
-
 export default function decorate($block) {
-  $block.querySelectorAll(':scope>div').forEach(($card) => {
-    $card.classList.add('card');
-    const $cardDivs = [...$card.children];
-    $cardDivs.forEach(($div) => {
-      if ($div.querySelector('img')) {
-        $div.classList.add('card-image');
-      } else {
-        $div.classList.add('card-content');
-      }
-      const $a = $div.querySelector('a');
-      if ($a && $a.textContent.startsWith('https://')) {
-        const $wrapper = createTag('a', { href: $a.href, class: 'card' });
-        $a.remove();
-        $wrapper.innerHTML = $card.innerHTML;
-        $block.replaceChild($wrapper, $card);
-      }
-    });
+  const $rows = Array.from($block.children);
+  $rows.forEach(($row) => {
+    const $cells = Array.from($row.children);
+    if ($cells[1]) {
+      const $a = $cells[1].querySelector('a');
+      $a.innerHTML = $cells[0].innerHTML;
+      $cells[0].remove();
+    }
   });
 }

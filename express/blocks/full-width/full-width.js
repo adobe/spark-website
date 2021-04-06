@@ -11,20 +11,17 @@
  */
 /* global */
 
-import {
-  toClassName,
-  getIcon,
-  addBlockClasses,
-} from '../../scripts/scripts.js';
-
 export default function decorate($block) {
-  addBlockClasses($block, ['icon-list-image', 'icon-list-description']);
-  $block.querySelectorAll(':scope>div').forEach(($row) => {
-    if ($row.children && $row.children[1]) {
-      const iconName = toClassName($row.children[0].textContent);
-      if (iconName && !iconName.startsWith('-')) {
-        $row.children[0].innerHTML = iconName ? getIcon(iconName) : '';
-      }
+  const $fullWidthPicture = $block.querySelector('picture');
+  const $section = $block.closest('.section-wrapper');
+  if ($fullWidthPicture) {
+    if ($fullWidthPicture.parentNode.tagName === 'DIV') {
+      $fullWidthPicture.classList.add('full-width-imageonly');
+      $block.classList.add('image-only');
+    } else {
+      $fullWidthPicture.classList.add('full-width-bg');
     }
-  });
+  } else {
+    $section.classList.add('full-width-noimage');
+  }
 }

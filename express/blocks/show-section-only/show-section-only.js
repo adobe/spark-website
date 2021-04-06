@@ -9,22 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* global */
 
-import {
-  toClassName,
-  getIcon,
-  addBlockClasses,
-} from '../../scripts/scripts.js';
-
-export default function decorate($block) {
-  addBlockClasses($block, ['icon-list-image', 'icon-list-description']);
-  $block.querySelectorAll(':scope>div').forEach(($row) => {
-    if ($row.children && $row.children[1]) {
-      const iconName = toClassName($row.children[0].textContent);
-      if (iconName && !iconName.startsWith('-')) {
-        $row.children[0].innerHTML = iconName ? getIcon(iconName) : '';
-      }
-    }
-  });
+export default function decorate() {
+  // eslint-disable-next-line no-useless-return
+  return;
 }

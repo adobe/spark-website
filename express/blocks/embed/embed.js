@@ -77,6 +77,7 @@ function decorateBlockEmbeds($block){
     const blockEmbeds = document.querySelectorAll('.embed.block a[href]').forEach(($a) => {
         const url = new URL($a.href.replace(/\/$/, ''));
         if (functObj[url.hostname]){
+            const {embedHTML, type} = functObj[url.hostname](url);
             if(type){
                 const $embed=createTag('div', {class: `embed embed-oembed embed-${type}`});
                 const $div=$a.closest('div');

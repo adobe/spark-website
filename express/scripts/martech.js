@@ -11,7 +11,12 @@
  */
 /* global window document digitalData _satellite fetch */
 
-import { loadScript, getLocale, createTag } from './scripts.js';
+import {
+  loadScript,
+  getLocale,
+  createTag,
+  getLanguage,
+} from './scripts.js';
 
 // this saves on file size when this file gets minified...
 const w = window;
@@ -71,26 +76,8 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   const pathSegments = pathname.substr(1).split('/');
   if (locale !== 'us') pathSegments.shift();
   const pageName = `adobe.com:${pathSegments.join(':')}`;
-  const langs = {
-    us: 'en-US',
-    fr: 'fr-FR',
-    de: 'de-DE',
-    it: 'it-IT',
-    dk: 'da-DK',
-    es: 'es-ES',
-    fi: 'fi-FI',
-    jp: 'ja-JP',
-    kr: 'ko-KR',
-    no: 'nb-NO',
-    nl: 'nl-NL',
-    br: 'pt-BR',
-    se: 'sv-SE',
-    tw: 'zh-Hant-TW',
-    cn: 'zh-Hans-CN',
-  };
 
-  let language = langs[locale];
-  if (!language) language = 'en-US';
+  const language = getLanguage(getLocale(window.location));
   const langSplits = language.split('-');
   langSplits.pop();
 
@@ -104,7 +91,7 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
     || pathname.includes('/feature/')
   ) {
     category = 'design';
-    if (pathname.includes('/photo')) category = 'photo';
+    if (pathname.includes('/image')) category = 'photo';
     if (pathname.includes('/video')) category = 'video';
   }
   let sparkLandingPageType;
@@ -319,54 +306,23 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
       sparkEventName = 'landing:ctaPressed';
 
     // Click in the pricing block
-    } else if ($a.closest('.pricing')) {
-      // allow the pricing block to handle this analytics
-      return;
-
-      // // get the position of the card in the plans
-      // cardPosition = Array.prototype.slice.call(document.querySelectorAll('.plan'))
-      // .indexOf($a.closest('.plan')) + 1;
-
-      // // Buy Now
-      // if ($a.hostname.includes('commerce.adobe.com')) {
-      //   // individual
-      //   if ($a.search.includes('spark.adobe.com')) {
-      //     adobeEventName += `pricing:individual:${cardPosition}:buyNow:Click`;
-      //   // team
-      //   } else if ($a.search.includes('adminconsole.adobe.com')) {
-      //     adobeEventName += `pricing:team:${cardPosition}:buyNow:Click`;
-      //   }
-
-      //   sparkEventName = 'beginPurchaseFlow';
-
-      // // anything else
-      // } else {
-      //   adobeEventName += `pricing:starter:${cardPosition}:getStarted:Click`;
-      //   sparkEventName = 'pricing:ctaPressed';
-      // }
-
-      // // eslint-disable-next-line no-underscore-dangle
-      // digitalData._set('spark.eventData.contextualData5', `cardPosition:${cardPosition}`);
-
-    // Click in the pricing block
     } else if (sparkLandingPageType === 'pricing') {
       // edu link
-      if (
-        $a.pathname.includes('/edu')
-      ) {
-        adobeEventName += 'pricing:eduLink:Click';
+      if ($a.pathname.includes('/edu')) {
+        adobeEventName += 'pricing:education:Click';
         sparkEventName = 'landing:eduSeoPagePressed';
-
       // business enterprise link
-      } else if (
-        $a.pathname.includes('business/enterprise')
-      ) {
-        adobeEventName += 'pricing:enterpriseLink:Click';
+      } else if ($a.pathname.includes('business/enterprise')) {
+        adobeEventName += 'pricing:enterprise:Click';
         sparkEventName = 'landing:businessSeoPagePressed';
-      // all other links
+      // Creative cloud learn more
+      } else if ($a.parentElement.id === 'adobe-spark-is-a-part-of-most-creative-cloud-paid-plans-learn-more') {
+        adobeEventName += 'pricing:creativeCloud:learnMore';
+        sparkEventName = 'landing:creativeCloudLearnMorePressed';
+      // View plans
       } else {
-        adobeEventName = appendLinkText(adobeEventName, $a);
-        sparkEventName = 'pricing:ctaPressed';
+        adobeEventName = 'pricing:viewPlans:Click';
+        sparkEventName = 'landing:viewPlansPressed';
       }
 
     // Default clicks
@@ -450,7 +406,13 @@ async function showRegionPicker() {
       const destLocale = pathSplits[1] ? `${pathSplits[1]}` : 'us';
       const off = locale !== 'us' ? locale.length + 1 : 0;
       const gPath = window.location.pathname.substr(off);
-      document.cookie = `international=${destLocale}; path=/`;
+
+      let domain = '';
+      if (window.location.hostname.endsWith('.adobe.com')) domain = ' domain=adobe.com;';
+      const cookieValue = `international=${destLocale};${domain} path=/`;
+      // eslint-disable-next-line no-console
+      console.log(`setting international based on language switch to: ${cookieValue}`);
+      document.cookie = cookieValue;
       event.preventDefault();
       window.location.href = prefix + gPath;
     });
@@ -459,7 +421,7 @@ async function showRegionPicker() {
 
 loadScript('https://www.adobe.com/etc/beagle/public/globalnav/adobe-privacy/latest/privacy.min.js');
 
-// const locale = getLocale(window.location);
+const locale = getLocale(window.location);
 
 window.fedsConfig = {
   ...window.fedsConfig,
@@ -469,19 +431,30 @@ window.fedsConfig = {
       showRegionPicker();
     },
   },
-  // locale,
+  locale,
   content: {
     experience: 'cc-express/spark-gnav',
   },
   profile: {
     customSignIn: () => {
-      window.location.href = 'https://spark.adobe.com/sp';
+      const sparkLang = getLanguage(getLocale(window.location));
+      const sparkPrefix = sparkLang === 'en-US' ? '' : `/${sparkLang}`;
+      window.location.href = `https://spark.adobe.com${sparkPrefix}/sp/`;
     },
   },
 };
 
 loadScript('https://www.adobe.com/etc.clientlibs/globalnav/clientlibs/base/feds.js', () => {
   setTimeout(() => {
+    /* attempt to switch link */
+    if (window.location.pathname.includes('/create/') || window.location.pathname.includes('/discover/')) {
+      const $aNav = document.querySelector('header a.feds-navLink--primaryCta');
+      const $aHero = document.querySelector('main .hero a.button.primary');
+      if ($aNav && $aHero) {
+        $aNav.href = $aHero.href;
+      }
+    }
+
     const gnav = document.getElementById('feds-header');
     const placeholder = document.getElementById('header-placeholder');
     gnav.classList.add('appear');

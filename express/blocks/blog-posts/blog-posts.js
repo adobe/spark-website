@@ -15,10 +15,11 @@
 import {
   createTag,
   readBlockConfig,
+  getOptimizedImageURL,
 } from '../../scripts/scripts.js';
 
 async function fetchBlogIndex() {
-  const resp = await fetch('/express/learn/blog/dev-query-index.json');
+  const resp = await fetch('/express/learn/blog/query-index.json');
   const json = await resp.json();
   const byPath = {};
   json.data.forEach((post) => {
@@ -102,9 +103,9 @@ async function decorateBlogPosts($blogPosts, config, offset = 0) {
 
   const limit = hasHero ? 13 : 12;
 
-  let $cards = $blogPosts.querySelector('.cards');
+  let $cards = $blogPosts.querySelector('.blog-cards');
   if (!$cards) {
-    $cards = createTag('div', { class: 'cards' });
+    $cards = createTag('div', { class: 'blog-cards' });
     $blogPosts.appendChild($cards);
   }
 
@@ -113,28 +114,31 @@ async function decorateBlogPosts($blogPosts, config, offset = 0) {
   for (let i = offset; i < max; i += 1) {
     const post = posts[i];
     const {
-      path, title, teaser, tags, image,
+      title, teaser, image, category,
     } = post;
 
-    const tagsArr = JSON.parse(tags);
-    const eyebrow = tagsArr[0] ? tagsArr[0].replace('-', ' ') : '';
+    const path = post.path.split('.')[0];
+
+    const eyebrow = category;
     const isHero = hasHero && !i;
     const imagePath = image.split('?')[0].split('_')[1];
-    let pictureTag = `<picture><img src="./media_${imagePath}?auto=webp&format=pjpg&optimize=medium&width=750"></picture>`;
+    const imageSrc = getOptimizedImageURL(`./media_${imagePath}?format=webply&optimize=medium&width=750`);
+    const heroSrc = getOptimizedImageURL(`./media_${imagePath}?format=webply&optimize=medium&width=2000`);
+    let pictureTag = `<picture><img src="${imageSrc}"></picture>`;
     if (isHero) {
       pictureTag = `<picture>
-        <source media="(max-width: 400px)" srcset="./media_${imagePath}?width=750&auto=webp&format=pjpg&optimize=medium">
-        <img src="./media_${imagePath}?width=2000&auto=webp&format=pjpg&optimize=medium">
+        <source media="(max-width: 400px)" srcset="${imageSrc}">
+        <img src="${heroSrc}">
       </picture>`;
     }
     const $card = createTag('a', {
-      class: `${isHero ? 'hero-card' : 'card'}`,
+      class: `${isHero ? 'blog-hero-card' : 'blog-card'}`,
       href: path,
     });
-    $card.innerHTML = `<div class="card-image">
+    $card.innerHTML = `<div class="blog-card-image">
           ${pictureTag}
         </div>
-        <div class="card-body">
+        <div class="blog-card-body">
         <p class="eyebrow">${eyebrow}</p>
         <h3>${title}</h3>
           <p>${teaser}</p>

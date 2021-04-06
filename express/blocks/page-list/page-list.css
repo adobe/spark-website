@@ -1,6 +1,10 @@
-main .page-list-container.appear, main .page-list.appear {
+main .page-list-container.appear {
   opacity: 1;
   height: unset;
+}
+
+main .page-list.appear {
+  opacity: 1;
 }
 
 main .page-list {
@@ -31,33 +35,18 @@ main .page-list-browse-button {
   color: #333;
   outline: none;
   background-color: transparent;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: background-color .4s;
   display: inline-block;
   font-family: 'adobe-clean', 'Adobe Clean', sans-serif;
 }
 
-@media (min-width: 600px) {
-  main .page-list-browse-button {
-    display: none;
-  } 
-  main .page-list {
-    width: 260px;
-  } 
-}
-
-
 main .page-list-container > div {
-    height: 500px;
     max-width: 100%;
     display: flex;
     margin: 0;
     box-sizing: border-box;
-  }
-
-main .page-list-container  > div > div {
-    overflow-y: scroll;
   }
 
 main .page-list-container  > div .template-list {
@@ -86,19 +75,39 @@ main .hero-short {
 
 main .page-list-left {
   flex: 0 0 auto;
-  overflow: scroll;
-  height: 100%;
 }
 main .page-list-right {
   flex: 1 1 auto;
-  padding-left: 20px;
-  overflow: scroll;
-  height: 100%;
 }
 
-main .page-template-list > .template-list.masonry {
-  columns: 260px auto;
-  column-gap: 0;
+main div.section-wrapper.page-list-container > div {
+  padding-left: 6px;
+}
+
+
+@media (min-width: 600px) {
+  main .page-list-left {
+    overflow-y: scroll;
+  }
+  
+  main .page-list-browse-button {
+    display: none;
+  } 
+  main .page-list {
+    width: 260px;
+  } 
+
+  main .page-list-right {
+    padding-left: 20px;
+  }
+  
+}
+
+
+
+
+main .page-template-list > .template-list.flex-masonry {
+  justify-content: flex-start;
 }
 
 

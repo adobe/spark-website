@@ -30,12 +30,10 @@ function addPages(index, config, $block) {
   });
   $block.appendChild($ul);
 }
-
-function setSize($cols, $flex, $hero) {
-  const minWidth = 260;
-  const w = $cols.parentNode.offsetWidth;
-  $cols.style.width = `${Math.floor(w / minWidth) * minWidth}px`;
-  $flex.style.height = `${(window.innerHeight - $hero.offsetHeight)}px`;
+function setSize($container) {
+  const $left = $container.querySelector('.page-list');
+  const $right = $container.querySelector('.page-list-right .template-list');
+  $left.style.height = `${$right.offsetHeight}px`;
 }
 
 function showHide($block, $ptl) {
@@ -50,7 +48,7 @@ function showHide($block, $ptl) {
 
 async function fetchIndex() {
   const locale = getLocale(window.location);
-  const indexURL = locale === 'us' ? '/express/query-index.json' : `/${locale}/query-index.json`;
+  const indexURL = locale === 'us' ? '/express/query-index.json' : `/${locale}/express/query-index.json`;
   try {
     const resp = await fetch(indexURL);
     const json = await resp.json();
@@ -109,10 +107,12 @@ async function decoratePageList($block) {
   });
 
   showHide($block, $ptl);
-  setSize($ptl, $flex, $hero);
+  setTimeout(() => {
+    setSize($flex);
+  }, 500);
   window.addEventListener('resize', () => {
     showHide($block, $ptl);
-    setSize($ptl, $flex, $hero);
+    setSize($flex);
   });
 
   const index = await fetchIndex();
