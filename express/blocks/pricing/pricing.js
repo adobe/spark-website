@@ -450,7 +450,7 @@ function decoratePlans($block, plans, planOptions, features) {
     });
     selectPlanOption($plan, options[0]);
     selectPlanAnalytics($plan, options);
-    cardId++;
+    cardId += 1;
   });
 }
 
