@@ -10,42 +10,38 @@
  * governing permissions and limitations under the License.
  */
 
- .embed {
+main .embed {
   margin-top: 64px;
   max-width: 100%;
   max-height: 600px;
   width: unset;
 }
 
-.embed+* {
+main .embed+* {
   margin-top: 64px;
 }
 
-.embed+p.legend {
+main .embed+p.legend {
   margin-top: 16px;
 }
 
-.embed img {
+main .embed img {
   max-width: 100%;
 }
 
-.embed-soundcloud>iframe {
-  height: 200px ! important;
-}
-
-.post-page main>div.post-body>.images,
-.post-page main>div.post-body>.embed {
+main .embed {
   text-align: center;
-}
-
-.post-page main>div.post-body>.embed {
   max-width: 800px;
 }
 
-.post-page main>div.post-body>.embed-instagram {
+main .embed.embed-instagram {
   max-width: fit-content;
 }
 
-.post-page main>div.post-body>.embed-twitter {
+main .embed.embed-twitter {
   max-height: unset;
+}
+
+main .embed-soundcloud>iframe {
+  height: 200px ! important;
 }

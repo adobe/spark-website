@@ -12,95 +12,99 @@
 /* global window */
 /* eslint-disable import/named, import/extensions */
 
-import {
-  createTag,
-} from '../../scripts/scripts.js';
+// 'open.spotify.com' returns 'spotify'
+function getServer(url) {
+  const l = url.hostname.lastIndexOf('.');
+  return url.hostname.substring(url.hostname.lastIndexOf('.', l - 1) + 1, l);
+}
+
+function getDefaultEmbed(url) {
+  return `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+    <iframe src="${url.href}" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" allowfullscreen=""
+      scrolling="no" allow="encrypted-media" title="Content from ${url.hostname}" loading="lazy">
+    </iframe>
+  </div>`;
+}
 
 function embedYoutube(url) {
   const usp = new URLSearchParams(url.search);
   const vid = usp.get('v');
   const embed = url.pathname;
   const embedHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
-      <iframe src="https://www.youtube.com${vid ? `/embed/${vid}?rel=0&amp;v=${vid}` : embed} style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" allowfullscreen="" scrolling="no" allow="encrypted-media; accelerometer; gyroscope; picture-in-picture" title="content from youtube" loading="lazy"></iframe>
-      </div>
-    `;
-  const type = 'youtube';
-  return {
-    embedHTML,
-    type,
-  };
+    <iframe src="https://www.youtube.com${vid ? `/embed/${vid}?rel=0&amp;v=${vid}` : embed}" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" allowfullscreen="" scrolling="no" allow="encrypted-media; accelerometer; gyroscope; picture-in-picture" title="Content from Youtube" loading="lazy"></iframe>
+  </div>`;
+  return embedHTML;
 }
 
 function embedInstagram(url) {
   const location = window.location.href;
-  const embedHTML = `
-      <div style="width: 100%; position: relative; padding-bottom: 56.25%; display: flex; justify-content: center">
-      <iframe class="instagram-media instagram-media-rendered" id="instagram-embed-0" src="${url.href}/embed/?cr=1&amp;v=13&amp;wp=1316&amp;rd=${location.endsWith('.html') ? location : `${location}.html`}"
+  const embedHTML = `<div style="width: 100%; position: relative; padding-bottom: 56.25%; display: flex; justify-content: center">
+    <iframe class="instagram-media instagram-media-rendered" id="instagram-embed-0" src="${url.href}/embed/?cr=1&amp;v=13&amp;wp=1316&amp;rd=${location.endsWith('.html') ? location : `${location}.html`}"
       allowtransparency="true" allowfullscreen="true" frameborder="0" height="530" style="background: white; border-radius: 3px; border: 1px solid rgb(219, 219, 219);
       box-shadow: none; display: block;">
-      </iframe>
-      </div>`;
-  const type = 'instagram';
-  return {
-    embedHTML,
-    type,
-  };
+    </iframe>
+  </div>`;
+  return embedHTML;
 }
 
 function embedVimeo(url) {
   const linkArr = url.href.split('/');
   const video = linkArr ? linkArr[3] : linkArr;
-  const embedHTML = `
-        <div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
-        <iframe src="${video ? url.href : `https://player.vimeo.com/video/${video}`}?byline=0&badge=0&portrait=0&title=0" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;"
-        allowfullscreen="" scrolling="no" allow="encrypted-media" title="content from vimeo" loading="lazy">
-        </iframe>
-        </div>`;
-  const type = 'vimeo-player';
-  return {
-    embedHTML,
-    type,
-  };
+  const embedHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+      <iframe src="${video ? url.href : `https://player.vimeo.com/video/${video}`}?byline=0&badge=0&portrait=0&title=0" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;"
+        allowfullscreen="" scrolling="no" allow="encrypted-media" title="Content from Vimeo" loading="lazy">
+      </iframe>
+  </div>`;
+  return embedHTML;
 }
 
-function embedAdobeTv(url) {
-  const embedHTML = `
-    <div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
-    <iframe src="${url.href}" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" allowfullscreen=""
-    scrolling="no" allow="encrypted-media" title="content from adobe" loading="lazy">
-    </iframe>
-    </div>`;
-  const type = 'adobe-tv';
-  return {
-    embedHTML,
-    type,
-  };
+function embedSpark(url) {
+  let embedURL = url;
+  if (!url.pathname.endsWith('/embed.html') && !url.pathname.endsWith('/embed')) {
+    embedURL = new URL(`${url.href}${url.pathname.endsWith('/') ? '' : '/'}embed.html`);
+  }
+
+  return getDefaultEmbed(embedURL);
 }
 
-const functObj = {
-  'www.youtube.com': embedYoutube,
-  'video.tv.adobe.com': embedAdobeTv,
-  'www.instagram.com': embedInstagram,
-  'www.vimeo.com': embedVimeo,
-  'player.vimeo.com': embedVimeo,
+const EMBEDS_CONFIG = {
+  'www.youtube.com': {
+    type: 'youtube',
+    embed: embedYoutube,
+  },
+  'video.tv.adobe.com': {
+    type: 'adobe-tv',
+    embed: getDefaultEmbed,
+  },
+  'www.instagram.com': {
+    type: '',
+    embed: embedInstagram,
+  },
+  'www.vimeo.com': {
+    type: 'vimeo-player',
+    embed: embedVimeo,
+  },
+  'player.vimeo.com': {
+    type: 'vimeo-player',
+    embed: embedVimeo,
+  },
+  'spark.adobe.com': {
+    type: 'adobe-spark',
+    embed: embedSpark,
+  },
 };
 
 function decorateBlockEmbeds($block) {
   $block.querySelectorAll('.embed.block a[href]').forEach(($a) => {
     const url = new URL($a.href.replace(/\/$/, ''));
-    if (functObj[url.hostname]) {
-      const {
-        embedHTML,
-        type,
-      } = functObj[url.hostname](url);
-      if (type) {
-        const $embed = createTag('div', {
-          class: `embed embed-oembed embed-${type}`,
-        });
-        const $div = $a.closest('div');
-        $embed.innerHTML = embedHTML;
-        $div.parentElement.replaceChild($embed, $div);
-      }
+    const config = EMBEDS_CONFIG[url.hostname];
+    if (config) {
+      const html = config.embed(url);
+      $block.innerHTML = html;
+      $block.classList = `block embed embed-${config.type}`;
+    } else {
+      $block.innerHTML = getDefaultEmbed(url);
+      $block.classList = `block embed embed-${getServer(url)}`;
     }
   });
 }
