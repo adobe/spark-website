@@ -12,6 +12,10 @@
 /* global window */
 /* eslint-disable import/named, import/extensions */
 
+import {
+  loadScript,
+} from '../../scripts/scripts.js';
+
 // 'open.spotify.com' returns 'spotify'
 function getServer(url) {
   const l = url.hostname.lastIndexOf('.');
@@ -67,6 +71,12 @@ function embedSpark(url) {
   return getDefaultEmbed(embedURL);
 }
 
+function embedTwitter(url) {
+  const embedHTML = `<blockquote class="twitter-tweet"><a href="${url}"></a></blockquote>`;
+  loadScript('https://platform.twitter.com/widgets.js');
+  return embedHTML;
+}
+
 const EMBEDS_CONFIG = {
   'www.youtube.com': {
     type: 'youtube',
@@ -91,6 +101,10 @@ const EMBEDS_CONFIG = {
   'spark.adobe.com': {
     type: 'adobe-spark',
     embed: embedSpark,
+  },
+  'twitter.com': {
+    type: 'twitter',
+    embed: embedTwitter,
   },
 };
 
