@@ -42,8 +42,9 @@ function embedYoutube(url) {
 
 function embedInstagram(url) {
   const location = window.location.href;
+  const src = `${url.origin}${url.pathname}${url.pathname.charAt(url.pathname.length - 1) === '/' ? '' : '/'}embed/?cr=1&amp;v=13&amp;wp=1316&amp;rd=${location.endsWith('.html') ? location : `${location}.html`}`;
   const embedHTML = `<div style="width: 100%; position: relative; padding-bottom: 56.25%; display: flex; justify-content: center">
-    <iframe class="instagram-media instagram-media-rendered" id="instagram-embed-0" src="${url.href}/embed/?cr=1&amp;v=13&amp;wp=1316&amp;rd=${location.endsWith('.html') ? location : `${location}.html`}"
+    <iframe class="instagram-media instagram-media-rendered" id="instagram-embed-0" src="${src}"
       allowtransparency="true" allowfullscreen="true" frameborder="0" height="530" style="background: white; border-radius: 3px; border: 1px solid rgb(219, 219, 219);
       box-shadow: none; display: block;">
     </iframe>
