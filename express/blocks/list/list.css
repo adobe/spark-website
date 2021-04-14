@@ -15,6 +15,7 @@ main .list .item-title {
     font-size: 16px;
     line-height: 1.2;
     font-weight: 700;
+    text-align: center;
 }
 
 main .list .item-text {
@@ -45,4 +46,12 @@ main .list .item-text {
   main .list .item {
     width: 220px;
   }
+}
+
+main .list > div > div > :first-child {
+  margin-top: 0;
+}
+
+main .list > div > div > :last-child {
+  margin-bottom: 0;
 }

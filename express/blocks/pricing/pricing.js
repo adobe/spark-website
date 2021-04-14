@@ -17,6 +17,7 @@ import {
   getOffer,
   readBlockConfig,
   getHelixEnv,
+  getIconElement,
 } from '../../scripts/scripts.js';
 
 async function fetchPricingTab(sheet, tab) {
@@ -72,10 +73,11 @@ function decorateHeader($block, header) {
 
 function getPlanOptions(planTitle, planOptions) {
   const options = [];
+  const formattedPlanTitle = planTitle.toLowerCase().trim();
   let optionId = 0;
   planOptions.forEach((option) => {
-    const optionPlan = option['Option Plan'];
-    if (planTitle === optionPlan) {
+    const optionPlan = option['Option Plan'].toLowerCase().trim();
+    if (formattedPlanTitle === optionPlan) {
       option.optionId = optionId;
       options.push(option);
       optionId += 1;
@@ -161,26 +163,31 @@ function selectPlanAnalytics($plan, options) {
       frequency: optionData.frequency,
       currency: optionData.currency,
     };
-    let adobeEventName;
+    let adobeEventName = 'adobe.com:express:CTA:';
     let sparkEventName;
-    // determine whether individual | starter | etc.
+    let buttonId;
+
     // Buy Now
-    if ($cta.hostname.includes('commerce.adobe.com')) {
+    if ($cta.hostname.includes('commerce.adobe.com') || $cta.hostname.includes('commerce-stg.adobe.com')) {
       // individual
-      if ($cta.search.includes('spark.adobe.com')) {
+      if ($cta.search.includes('spark.adobe.com') || $cta.search.includes('adobeprojectm.com')) {
+        buttonId = `individual:${option.position}:buyNow:Click`;
         adobeEventName += `pricing:individual:${option.position}:buyNow:Click`;
         // team
       } else if ($cta.search.includes('adminconsole.adobe.com')) {
+        buttonId = `team:${option.position}:buyNow:Click`;
         adobeEventName += `pricing:team:${option.position}:buyNow:Click`;
       }
       sparkEventName = 'beginPurchaseFlow';
       // anything else
     } else {
+      buttonId = `starter:${option.position}:buyNow:Click`;
       adobeEventName += `pricing:starter:${option.position}:getStarted:Click`;
       sparkEventName = 'pricing:ctaPressed';
     }
 
     digitalData._set('primaryEvent.eventInfo.eventName', adobeEventName);
+    digitalData._set('primaryEvent.eventData.buttonId', buttonId);
     digitalData._set('spark.eventData.eventName', sparkEventName);
     digitalData._set('primaryProduct.productInfo.amountWithoutTax', option.price);
     digitalData._set('primaryProduct.productInfo.billingFrequency', option.frequency);
@@ -334,19 +341,39 @@ async function selectPlanOption($plan, option) {
 async function addDropdownEventListener($plan, options) {
   const $dropdown = $plan.querySelector('.plan-dropdown');
 
-  $dropdown.addEventListener('change', async (e) => {
+  $dropdown.addEventListener('change', (e) => {
     const option = options[e.target.selectedIndex];
-    await selectPlanOption($plan, option);
+    selectPlanOption($plan, option);
+    option.frequency = option['Analytics Frequency do-not-translate'];
 
     digitalData._set('primaryEvent.eventInfo.eventName', `adobe.com:express:CTA:pricing:${option.frequency}:dropDown:Click`);
+    digitalData._set('spark.eventData.eventName', 'pricing:commitmentTypeSelected');
     _satellite.track('event', { digitalData: digitalData._snapshot() });
+    digitalData._delete('spark.eventData.eventName');
     digitalData._delete('primaryEvent.eventInfo.eventName');
   });
 }
 
-function decoratePlans($block, plans, planOptions) {
+function addSeeDetailsEventListener($planSeeDetails) {
+  $planSeeDetails.addEventListener('click', (event) => {
+    event.preventDefault();
+    const $seeDetails = event.target.closest('.plan-see-details');
+    const $plan = event.target.closest('.plan');
+    const $planFeatures = $plan.querySelector('.plan-features');
+    if ($planFeatures.classList.contains('active')) {
+      $planFeatures.classList.remove('active');
+      $seeDetails.querySelector('.chevron').style.transform = 'rotate(90deg)';
+    } else {
+      $planFeatures.classList.add('active');
+      $seeDetails.querySelector('.chevron').style.transform = 'rotate(270deg)';
+    }
+  });
+}
+
+function decoratePlans($block, plans, planOptions, features) {
   const $plans = createTag('div', { class: 'pricing-plans' });
   $block.append($plans);
+  let cardId = 1;
   plans.forEach((plan) => {
     const title = plan['Plan Title'];
     const description = plan['Plan Description'];
@@ -398,8 +425,34 @@ function decoratePlans($block, plans, planOptions) {
     }
     const $cta = createTag('a', { class: 'button primary' });
     $footer.append($cta);
+    const $planFeatures = createTag('div', { class: 'plan-features' });
+    if (!promotion) {
+      const $planSeeDetails = createTag('div', { class: 'plan-see-details' });
+      $planSeeDetails.innerHTML = '<p>See details</p>';
+      const $chevron = getIconElement('chevron');
+      $chevron.classList.add('chevron');
+      $chevron.style.transform = 'rotate(90deg)';
+      $planSeeDetails.append($chevron);
+      $plan.append($planSeeDetails);
+      addSeeDetailsEventListener($planSeeDetails);
+    } else {
+      $planFeatures.classList.add('active');
+    }
+    $plan.append($planFeatures);
+    features.forEach((feature) => {
+      if (feature[`Column ${cardId}`]) {
+        const $feature = createTag('div', { class: 'plan-feature' });
+        $planFeatures.append($feature);
+        const $featureImage = getIconElement(feature.Image);
+        $feature.append($featureImage);
+        const $featureText = createTag('p');
+        $featureText.innerText = feature.Description;
+        $feature.append($featureText);
+      }
+    });
     selectPlanOption($plan, options[0]);
     selectPlanAnalytics($plan, options);
+    cardId += 1;
   });
 }
 
@@ -494,17 +547,13 @@ async function fetchPricingSheet(sheet) {
 async function decoratePricing($block) {
   const config = readBlockConfig($block);
   const { sheet } = config;
-
   const {
     header, plans, planOptions, features,
   } = await fetchPricingSheet(sheet);
-
   $block.innerHTML = '';
-
   decorateHeader($block, header);
-  decoratePlans($block, plans, planOptions);
+  decoratePlans($block, plans, planOptions, features);
   decorateTable($block, features);
-
   $block.classList.add('appear');
 }
 

@@ -9,13 +9,14 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* global window document digitalData _satellite fetch */
+/* global window document navigator digitalData _satellite fetch */
 
 import {
   loadScript,
   getLocale,
   createTag,
   getLanguage,
+  getHelixEnv,
 } from './scripts.js';
 
 // this saves on file size when this file gets minified...
@@ -56,9 +57,7 @@ w.marketingtech = {
       environment: 'production',
     },
     analytics: {
-      // TODO: Switch these before go live.
-      // additionalAccounts: 'adbemmarvelweb.prod',
-      additionalAccounts: 'adbemmarvelweb.rebootdev2',
+      additionalAccounts: 'adbemmarvelweb.prod',
     },
     target: true,
   },
@@ -68,6 +67,8 @@ w.targetGlobalSettings = {
 };
 
 loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
+  /* eslint-disable no-underscore-dangle */
+
   //------------------------------------------------------------------------------------
   // gathering the data
   //------------------------------------------------------------------------------------
@@ -94,18 +95,39 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
     if (pathname.includes('/image')) category = 'photo';
     if (pathname.includes('/video')) category = 'video';
   }
+
   let sparkLandingPageType;
-  // seo
+  // home
   if (
-    pathname.includes('/create/')
+    pathname === '/express'
+    || pathname === '/express/'
+  ) {
+    sparkLandingPageType = 'home';
+  // seo
+  } else if (
+    pathname === '/express/create'
+    || pathname.includes('/create/')
+    || pathname === '/express/make'
     || pathname.includes('/make/')
+    || pathname === '/express/feature'
     || pathname.includes('/feature/')
+    || pathname === '/express/discover'
     || pathname.includes('/discover/')
   ) {
     sparkLandingPageType = 'seo';
+  // learn
+  } else if (
+    pathname === '/express/learn'
+    || (
+      pathname.includes('/learn/')
+      && !pathname.includes('/blog/')
+    )
+  ) {
+    sparkLandingPageType = 'learn';
   // blog
   } else if (
-    pathname.includes('/learn/blog/')
+    pathname === '/express/learn/blog'
+    || pathname.includes('/learn/blog/')
   ) {
     sparkLandingPageType = 'blog';
   // pricing
@@ -118,8 +140,11 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
     pathname.includes('/education/')
   ) {
     sparkLandingPageType = 'edu';
+  // other
+  } else {
+    sparkLandingPageType = 'other';
   }
-  const sparkUserType = 'knownNotAuth'; // (w.adobeIMS && w.adobeIMS.isUserAuthenticated()) ? '' : '';
+  const sparkUserType = (w.adobeIMS && w.adobeIMS.isSignedInUser()) ? 'knownNotAuth' : 'unknown';
   const url = new URL(loc.href);
   const sparkTouchpoint = url.searchParams.get('touchpointName');
 
@@ -128,124 +153,81 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   //------------------------------------------------------------------------------------
 
   w.adobeid = {
-    client_id: 'spark-helix',
+    client_id: 'MarvelWeb3',
     scope: 'AdobeID,openid',
     locale: language,
   };
 
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('page.pageInfo.pageName', pageName);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('page.pageInfo.language', language);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('page.pageInfo.siteSection', 'adobe.com:express');
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('page.pageInfo.category', category);
 
   //------------------------------------------------------------------------------------
   // spark specific global and persistent data layer properties
   //------------------------------------------------------------------------------------
 
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('page.pageInfo.pageurl', loc.href);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('page.pageInfo.namespace', 'express');
 
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.pageurl', loc.href);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.pageReferrer', d.referrer);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.pageTitle', d.title);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.landingPageType', sparkLandingPageType);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.landingPageReferrer', d.referrer);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.landingPageUrl', loc.href);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.userType', sparkUserType);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.premiumEntitled', '');
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.displayedLanguage', language);
-  // TODO: I don't know how to capture this
-  // eslint-disable-next-line no-underscore-dangle
-  // digitalData._set('spark.eventData.deviceLanguage', language);
-  // eslint-disable-next-line no-underscore-dangle
+  digitalData._set('spark.eventData.deviceLanguage', navigator.language);
   digitalData._set('spark.eventData.pagename', pageName);
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.platformName', 'web');
-  // eslint-disable-next-line no-underscore-dangle
-  digitalData._set('spark.eventData.contextualData3', `category:${category}`);
+  if (category) {
+    digitalData._set('spark.eventData.contextualData3', `category:${category}`);
+  }
+  // image resize quick action
+  if (pathname.includes('/feature/image/resize')) {
+    digitalData._set('spark.eventData.contextualData1', 'quickActionType:imageResize');
+    digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
+  }
 
   //------------------------------------------------------------------------------------
+  // Fire extra spark events
+  //------------------------------------------------------------------------------------
+
   // Fire the viewedPage event
-  //------------------------------------------------------------------------------------
-
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('primaryEvent.eventInfo.eventName', 'viewedPage');
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.eventName', 'viewedPage');
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._set('spark.eventData.sendTimestamp', new Date().getTime());
 
-  // eslint-disable-next-line no-underscore-dangle
-  _satellite.track('event', { digitalData: digitalData._snapshot() });
+  _satellite.track('event', {
+    digitalData: digitalData._snapshot(),
+  });
 
   // Fire the landing:viewedPage event
+  digitalData._set('primaryEvent.eventInfo.eventName', 'landing:viewedPage');
+  digitalData._set('spark.eventData.eventName', 'landing:viewedPage');
+
+  _satellite.track('event', {
+    digitalData: digitalData._snapshot(),
+  });
+
+  // Fire the displayPurchasePanel event if it is the pricing site
   if (
-    sparkLandingPageType === 'seo'
-    || sparkLandingPageType === 'pricing'
-    || sparkLandingPageType === 'edu'
-  ) {
-    // eslint-disable-next-line no-underscore-dangle
-    digitalData._set('primaryEvent.eventInfo.eventName', 'landing:viewedPage');
-    // eslint-disable-next-line no-underscore-dangle
-    digitalData._set('spark.eventData.eventName', 'landing:viewedPage');
-
-    _satellite.track('event', {
-      // eslint-disable-next-line no-underscore-dangle
-      digitalData: digitalData._snapshot(),
-    });
-
-  // Fire the blog:viewedPage event
-  } else if (
-    sparkLandingPageType === 'blog'
-  ) {
-    // eslint-disable-next-line no-underscore-dangle
-    digitalData._set('primaryEvent.eventInfo.eventName', 'blog:viewedPage');
-    // eslint-disable-next-line no-underscore-dangle
-    digitalData._set('spark.eventData.eventName', 'blog:viewedPage');
-
-    _satellite.track('event', {
-      // eslint-disable-next-line no-underscore-dangle
-      digitalData: digitalData._snapshot(),
-    });
-
-  // Fire the displayPurchasePanel event
-  } else if (
     sparkLandingPageType === 'pricing'
     && sparkTouchpoint
   ) {
-    // eslint-disable-next-line no-underscore-dangle
     digitalData._set('primaryEvent.eventInfo.eventName', 'displayPurchasePanel');
-    // eslint-disable-next-line no-underscore-dangle
     digitalData._set('spark.eventData.eventName', 'displayPurchasePanel');
-    // eslint-disable-next-line no-underscore-dangle
     digitalData._set('spark.eventData.trigger', sparkTouchpoint);
 
     _satellite.track('event', {
-      // eslint-disable-next-line no-underscore-dangle
       digitalData: digitalData._snapshot(),
     });
   }
 
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._delete('primaryEvent.eventInfo.eventName');
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._delete('spark.eventData.eventName');
-  // eslint-disable-next-line no-underscore-dangle
   digitalData._delete('spark.eventData.sendTimestamp');
 
   function textToName(text) {
@@ -321,9 +303,14 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
         sparkEventName = 'landing:creativeCloudLearnMorePressed';
       // View plans
       } else {
-        adobeEventName = 'pricing:viewPlans:Click';
+        adobeEventName = 'adobe.com:express:CTA:pricing:viewPlans:Click';
         sparkEventName = 'landing:viewPlansPressed';
       }
+
+    // quick actions clicks
+    } else if ($a.href.includes('spark.adobe.com/tools')) {
+      adobeEventName = appendLinkText(adobeEventName, $a);
+      sparkEventName = 'quickAction:ctaPressed';
 
     // Default clicks
     } else {
@@ -331,59 +318,52 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
       sparkEventName = 'landing:ctaPressed';
     }
 
-    // eslint-disable-next-line no-underscore-dangle
     digitalData._set('primaryEvent.eventInfo.eventName', adobeEventName);
-    // eslint-disable-next-line no-underscore-dangle
     digitalData._set('spark.eventData.eventName', sparkEventName);
 
-    // eslint-disable-next-line no-underscore-dangle
-    _satellite.track('event', { digitalData: digitalData._snapshot() });
+    _satellite.track('event', {
+      digitalData: digitalData._snapshot(),
+    });
 
-    // eslint-disable-next-line no-underscore-dangle
     digitalData._delete('primaryEvent.eventInfo.eventName');
-    // eslint-disable-next-line no-underscore-dangle
     digitalData._delete('spark.eventData.eventName');
-    // eslint-disable-next-line no-underscore-dangle
-    digitalData._delete('spark.eventData.contextualData5');
   }
 
   function decorateAnalyticsEvents() {
+    // for tracking all of the links
     d.querySelectorAll('main a').forEach(($a) => {
       $a.addEventListener('click', () => {
         trackButtonClick($a);
       });
     });
+
+    // for tracking just the sticky banner close button
+    const $button = d.querySelector('.sticky-promo-bar button.close');
+    if ($button) {
+      $button.addEventListener('click', () => {
+        const adobeEventName = 'adobe.com:express:cta:startYourFreeTrial:close';
+        const sparkEventName = adobeEventName;
+
+        digitalData._set('primaryEvent.eventInfo.eventName', adobeEventName);
+        digitalData._set('spark.eventData.eventName', sparkEventName);
+
+        _satellite.track('event', {
+          digitalData: digitalData._snapshot(),
+        });
+
+        digitalData._delete('primaryEvent.eventInfo.eventName');
+        digitalData._delete('spark.eventData.eventName');
+      });
+    }
   }
 
-  // function pollForPricingBlock() {
-  //   const pollingTimer = setTimeout(() => {
-  //     const $plansBlock = d.querySelector('.pricing-plans');
-
-  //     if ($plansBlock) {
-  //       decorateAnalyticsEvents();
-  //     } else {
-  //       pollForPricingBlock();
-  //     }
-  //   }, 300);
-
-  //   // make sure we don't poll forever
-  //   setTimeout(() => {
-  //     clearTimeout(pollingTimer);
-  //   }, 4000);
-  // }
-
-  // if (sparkLandingPageType === 'pricing') {
-  //   pollForPricingBlock();
-  // } else {
-  //   decorateAnalyticsEvents();
-  // }
   decorateAnalyticsEvents();
+
+  /* eslint-enable no-underscore-dangle */
 });
 
 async function showRegionPicker() {
   const $body = document.body;
-  const $regionPicker = createTag('div', { id: 'region-picker' });
-  $body.appendChild($regionPicker);
   const locale = getLocale(window.location);
   const regionpath = locale === 'us' ? '/' : `/${locale}/`;
   const host = window.location.hostname === 'localhost' ? 'https://www.adobe.com' : '';
@@ -393,6 +373,11 @@ async function showRegionPicker() {
   const $div = createTag('div');
   $div.innerHTML = html;
   const $regionNav = $div.querySelector('nav.language-Navigation');
+  if (!$regionNav) {
+    return;
+  }
+  const $regionPicker = createTag('div', { id: 'region-picker' });
+  $body.appendChild($regionPicker);
   $regionPicker.appendChild($regionNav);
   $regionPicker.addEventListener('click', (event) => {
     if (event.target === $regionPicker || event.target === $regionNav) {
@@ -439,7 +424,12 @@ window.fedsConfig = {
     customSignIn: () => {
       const sparkLang = getLanguage(getLocale(window.location));
       const sparkPrefix = sparkLang === 'en-US' ? '' : `/${sparkLang}`;
-      window.location.href = `https://spark.adobe.com${sparkPrefix}/sp/`;
+      let sparkLoginUrl = `https://spark.adobe.com${sparkPrefix}/sp/`;
+      const env = getHelixEnv();
+      if (env && env.spark) {
+        sparkLoginUrl = sparkLoginUrl.replace('spark.adobe.com', env.spark);
+      }
+      window.location.href = sparkLoginUrl;
     },
   },
 };
@@ -447,9 +437,11 @@ window.fedsConfig = {
 loadScript('https://www.adobe.com/etc.clientlibs/globalnav/clientlibs/base/feds.js', () => {
   setTimeout(() => {
     /* attempt to switch link */
-    if (window.location.pathname.includes('/create/') || window.location.pathname.includes('/discover/')) {
+    if (window.location.pathname.includes('/create/')
+      || window.location.pathname.includes('/discover/')
+      || window.location.pathname.includes('/feature/')) {
       const $aNav = document.querySelector('header a.feds-navLink--primaryCta');
-      const $aHero = document.querySelector('main .hero a.button.primary');
+      const $aHero = document.querySelector('main > div:first-of-type a.button.primary');
       if ($aNav && $aHero) {
         $aNav.href = $aHero.href;
       }
