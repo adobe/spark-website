@@ -920,13 +920,8 @@ function supportsWebp() {
 }
 
 // Google official webp detection
-function checkWebpFeature(feature, callback) {
-  const kTestImages = {
-    lossy: 'UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA',
-    lossless: 'UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==',
-    alpha: 'UklGRkoAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAwAAAARBxAR/Q9ERP8DAABWUDggGAAAABQBAJ0BKgEAAQAAAP4AAA3AAP7mtQAAAA==',
-    animation: 'UklGRlIAAABXRUJQVlA4WAoAAAASAAAAAAAAAAAAQU5JTQYAAAD/////AABBTk1GJgAAAAAAAAAAAAAAAAAAAGQAAABWUDhMDQAAAC8AAAAQBxAREYiI/gcA',
-  };
+function checkWebpFeature(callback) {
+  const kTestImages = 'UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
   const img = new Image();
   img.onload = () => {
     const result = (img.width > 0) && (img.height > 0);
@@ -937,7 +932,7 @@ function checkWebpFeature(feature, callback) {
     window.webpSupport = false;
     callback();
   };
-  img.src = `data:image/webp;base64,${kTestImages[feature]}`;
+  img.src = `data:image/webp;base64,${kTestImages}`;
 }
 
 export function getOptimizedImageURL(src) {
@@ -1150,7 +1145,7 @@ async function decoratePage() {
   decorateHero();
   decorateButtons();
   fixIcons();
-  checkWebpFeature('lossy', () => {
+  checkWebpFeature(() => {
     webpPolyfill(document);
   });
   decorateBlocks();
