@@ -921,18 +921,26 @@ function supportsWebp() {
 
 // Google official webp detection
 function checkWebpFeature(callback) {
-  const kTestImages = 'UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
-  const img = new Image();
-  img.onload = () => {
-    const result = (img.width > 0) && (img.height > 0);
-    window.webpSupport = result;
+  const webpSupport = sessionStorage.getItem('webpSupport');
+  if (!webpSupport) {
+    const kTestImages = 'UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
+    const img = new Image();
+    img.onload = () => {
+      const result = (img.width > 0) && (img.height > 0);
+      window.webpSupport = result;
+      sessionStorage.setItem('webpSupport', result);
+      callback();
+    };
+    img.onerror = () => {
+      sessionStorage.setItem('webpSupport', false);
+      window.webpSupport = false;
+      callback();
+    };
+    img.src = `data:image/webp;base64,${kTestImages}`;
+  } else {
+    window.webpSupport = (webpSupport === 'true');
     callback();
-  };
-  img.onerror = () => {
-    window.webpSupport = false;
-    callback();
-  };
-  img.src = `data:image/webp;base64,${kTestImages}`;
+  }
 }
 
 export function getOptimizedImageURL(src) {
