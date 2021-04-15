@@ -171,6 +171,7 @@ indices:
     fetch: https://{repo}-{owner}.hlx.page/{path}
     include:
       - 'express/**/*.(docx|md)'
+      - '*/express/**/*.(docx|md)'
     exclude:
       - '**/Document.*'
       - 'express/learn/blog/**'
