@@ -66,7 +66,7 @@ indices:
         value: |
           match(attribute(el, 'content'), 'https:\/\/[^/]+(\/.*)')
       sourceHash:
-        select: head > meta[name=x-source-hash
+        select: head > meta[name="x-source-hash"]
         value: |
           attribute(el, 'content')
       lastModified:
@@ -75,6 +75,10 @@ indices:
           parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
       shortTitle:
         select: head > meta[name="short-title"]
+        value: |
+          attribute(el, 'content')
+      robots:
+        select: head > meta[name="robots"]
         value: |
           attribute(el, 'content')
 
