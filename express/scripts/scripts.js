@@ -1129,7 +1129,7 @@ function displayEnv() {
     if (document.referrer) {
       const url = new URL(document.referrer);
       if (url.hostname.endsWith('.adobeprojectm.com')) {
-        setHelixEnv('stage', { spark: url.hostname });
+        setHelixEnv('stage', { spark: url.host });
       }
       if (window.location.hostname !== url.hostname) {
         console.log(`external referrer detected: ${document.referrer}`);
