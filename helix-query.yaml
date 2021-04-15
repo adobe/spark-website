@@ -161,3 +161,26 @@ indices:
     include:
       - 'se/express/**/*.(docx|md)'
     target: https://adobe.sharepoint.com/:x:/r/sites/SparkHelix/Shared%20Documents/website/se/express/query-index.xlsx?d=wfc34507ebd59465bb3795c9f1a593f5b&csf=1&web=1&e=DLWVJC
+
+  templates:
+    source: html
+    fetch: https://{repo}-{owner}.hlx.page/{path}
+    include:
+      - 'express/**/*.(docx|md)'
+    exclude:
+      - '**/Document.*'
+      - 'express/learn/blog/**'
+    target: https://adobe.sharepoint.com/:x:/r/sites/SparkHelix/Shared%20Documents/website/express/templates.xlsx?d=wf10c84f59e744163bf0a957a459177cd&csf=1&web=1&e=CSr8lx
+    properties:
+      sourceHash:
+        select: head > meta[name=x-source-hash
+        value: |
+          attribute(el, 'content')
+      lastModified:
+        select: none
+        value: |
+          parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
+      templates:
+        select: main div.template-list a
+        values: |
+          match(attribute(el, 'href'), 'https://adobesparkpost.app.link/(.*)')
