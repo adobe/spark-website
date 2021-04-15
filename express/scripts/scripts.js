@@ -1173,7 +1173,12 @@ async function decoratePage() {
   document.body.classList.add('appear');
 
   // this is a temporary fix for a preview URL mismatch
-  tempRedirect();
+  try {
+    tempRedirect();
+  } catch (e) {
+    // something went wrong
+    console.log(`temp redirect failed ${e.message}`);
+  }
 }
 
 window.spark = {};
