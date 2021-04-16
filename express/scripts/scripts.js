@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 /* global window, navigator, document, fetch, performance, PerformanceObserver,
-   localStorage, FontFace, sessionStorage */
+          FontFace, sessionStorage, Image */
 /* eslint-disable no-console */
 
 export function toClassName(name) {
@@ -370,7 +370,7 @@ function decorateHeaderAndFooter() {
           text: 'Learn',
         },
         {
-          text: 'Compare Plans',
+          text: 'Compare plans',
           type: 'nodrop',
         },
         {
@@ -479,7 +479,7 @@ function decorateBlocks() {
     let blockName = classes[0];
     const $section = $block.closest('.section-wrapper');
     if ($section) {
-      $section.classList.add(`${blockName}-container`.replaceAll('--', '-'));
+      $section.classList.add(`${blockName}-container`.replace(/--/g, '-'));
     }
     const blocksWithOptions = ['checker-board', 'template-list', 'steps', 'cards', 'quotes', 'page-list',
       'columns', 'show-section-only', 'image-list', 'feature-list'];
@@ -916,19 +916,31 @@ function splitSections() {
 }
 
 function supportsWebp() {
-  if (window.name.includes('nowebp')) return false;
-  if (window.name.includes('webp')) return true;
+  return window.webpSupport;
+}
 
-  if (window.webpSupport === undefined) {
-    window.webpSupport = true;
-    const $canvas = document.createElement('canvas');
-    if ($canvas.getContext && $canvas.getContext('2d')) {
-      window.webpSupport = $canvas.toDataURL('image/webp').startsWith('data:image/webp');
-    } else {
+// Google official webp detection
+function checkWebpFeature(callback) {
+  const webpSupport = sessionStorage.getItem('webpSupport');
+  if (!webpSupport) {
+    const kTestImages = 'UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
+    const img = new Image();
+    img.onload = () => {
+      const result = (img.width > 0) && (img.height > 0);
+      window.webpSupport = result;
+      sessionStorage.setItem('webpSupport', result);
+      callback();
+    };
+    img.onerror = () => {
+      sessionStorage.setItem('webpSupport', false);
       window.webpSupport = false;
-    }
+      callback();
+    };
+    img.src = `data:image/webp;base64,${kTestImages}`;
+  } else {
+    window.webpSupport = (webpSupport === 'true');
+    callback();
   }
-  return (window.webpSupport);
 }
 
 export function getOptimizedImageURL(src) {
@@ -964,13 +976,15 @@ function resetAttribute($elem, attrib) {
   }
 }
 
-function webpPolyfill() {
-  document.querySelectorAll('img').forEach(($img) => {
-    resetAttribute($img, 'src');
-  });
-  document.querySelectorAll('picture source').forEach(($source) => {
-    resetAttribute($source, 'srcset');
-  });
+export function webpPolyfill(element) {
+  if (!supportsWebp()) {
+    element.querySelectorAll('img').forEach(($img) => {
+      resetAttribute($img, 'src');
+    });
+    element.querySelectorAll('picture source').forEach(($source) => {
+      resetAttribute($source, 'srcset');
+    });
+  }
 }
 
 function setTheme() {
@@ -1035,7 +1049,7 @@ function decorateSocialIcons() {
 }
 
 export function getHelixEnv() {
-  let envName = localStorage.getItem('helix-env');
+  let envName = sessionStorage.getItem('helix-env');
   if (!envName) envName = 'prod';
   const envs = {
     stage: {
@@ -1048,10 +1062,29 @@ export function getHelixEnv() {
     },
   };
   const env = envs[envName];
+
+  const overrideItem = sessionStorage.getItem('helix-env-overrides');
+  if (overrideItem) {
+    const overrides = JSON.parse(overrideItem);
+    const keys = Object.keys(overrides);
+    env.overrides = keys;
+
+    for (const a of keys) {
+      env[a] = overrides[a];
+    }
+  }
+
   if (env) {
     env.name = envName;
   }
   return env;
+}
+
+/* this is a workaround for a preview URL sidekick mismatch */
+function tempRedirect() {
+  if (window.location && window.location.hostname && window.location.hostname.startsWith('main--')) {
+    window.location.href = window.location.href.replace('main--', '');
+  }
 }
 
 function displayOldLinkWarning() {
@@ -1060,7 +1093,7 @@ function displayOldLinkWarning() {
       const url = new URL($a.href);
       if (!(url.pathname.endsWith('/sp/') || url.pathname.endsWith('/sp/login') || url.pathname === '/'
       || url.pathname.startsWith('/tools/') || url.pathname.startsWith('/page/')
-      || url.pathname.startsWith('/post/') || url.pathname.startsWith('/video/')
+      || url.pathname.startsWith('/express-apps/') || url.pathname.startsWith('/post/') || url.pathname.startsWith('/video/')
       || url.pathname.startsWith('/classroom/'))) {
         console.log(`old link: ${$a}`);
         $a.style.border = '10px solid red';
@@ -1069,22 +1102,48 @@ function displayOldLinkWarning() {
   }
 }
 
-function displayEnv() {
-  const usp = new URLSearchParams(window.location.search);
-  if (usp.has('helix-env')) {
-    const env = usp.get('helix-env');
-    if (env) {
-      localStorage.setItem('helix-env', env);
+function setHelixEnv(name, overrides) {
+  if (name) {
+    sessionStorage.setItem('helix-env', name);
+    if (overrides) {
+      sessionStorage.setItem('helix-env-overrides', JSON.stringify(overrides));
     } else {
-      localStorage.removeItem('helix-env');
+      sessionStorage.removeItem('helix-env-overrides');
     }
+  } else {
+    sessionStorage.removeItem('helix-env');
+    sessionStorage.removeItem('helix-env-overrides');
   }
+}
 
-  const env = localStorage.getItem('helix-env');
-  if (env) {
-    const $helixEnv = createTag('div', { class: 'helix-env' });
-    $helixEnv.innerHTML = env + (getHelixEnv(env) ? '' : ' [not found]');
-    document.body.appendChild($helixEnv);
+function displayEnv() {
+  try {
+    /* setup based on URL Params */
+    const usp = new URLSearchParams(window.location.search);
+    if (usp.has('helix-env')) {
+      const env = usp.get('helix-env');
+      setHelixEnv(env);
+    }
+
+    /* setup based on referrer */
+    if (document.referrer) {
+      const url = new URL(document.referrer);
+      if (url.hostname.endsWith('.adobeprojectm.com')) {
+        setHelixEnv('stage', { spark: url.host });
+      }
+      if (window.location.hostname !== url.hostname) {
+        console.log(`external referrer detected: ${document.referrer}`);
+      }
+    }
+
+    const env = sessionStorage.getItem('helix-env');
+    if (env) {
+      const $helixEnv = createTag('div', { class: 'helix-env' });
+      $helixEnv.innerHTML = env + (getHelixEnv() ? '' : ' [not found]');
+      document.body.appendChild($helixEnv);
+    }
+  } catch (e) {
+    console.log(`display env failed: ${e.message}`);
   }
 }
 
@@ -1101,7 +1160,9 @@ async function decoratePage() {
   decorateHero();
   decorateButtons();
   fixIcons();
-  webpPolyfill();
+  checkWebpFeature(() => {
+    webpPolyfill(document);
+  });
   decorateBlocks();
   decorateDoMoreEmbed();
   decorateLinkedPictures();
@@ -1110,6 +1171,14 @@ async function decoratePage() {
   displayEnv();
   displayOldLinkWarning();
   document.body.classList.add('appear');
+
+  // this is a temporary fix for a preview URL mismatch
+  try {
+    tempRedirect();
+  } catch (e) {
+    // something went wrong
+    console.log(`temp redirect failed ${e.message}`);
+  }
 }
 
 window.spark = {};
