@@ -35,7 +35,7 @@
   sk.add({
     id: 'reload',
     override: true,
-    condition: (sidekick) => sidekick.config.innerHost.endsWith(sidekick.location.innerHost) || sidekick.location.hostname === 'localhost',
+    condition: (sidekick) => sidekick.config.innerHost.endsWith(sidekick.location.hostname) || sidekick.location.hostname === 'localhost',
     button: {
       action: () => {
         const { location } = sk;
