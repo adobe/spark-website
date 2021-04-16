@@ -1080,13 +1080,6 @@ export function getHelixEnv() {
   return env;
 }
 
-/* this is a workaround for a preview URL sidekick mismatch */
-function tempRedirect() {
-  if (window.location && window.location.hostname && window.location.hostname.startsWith('main--')) {
-    window.location.href = window.location.href.replace('main--', '');
-  }
-}
-
 function displayOldLinkWarning() {
   if (window.location.hostname.includes('localhost') || window.location.hostname.includes('.hlx.page')) {
     document.querySelectorAll('main a[href^="https://spark.adobe.com/"]').forEach(($a) => {
@@ -1171,14 +1164,6 @@ async function decoratePage() {
   displayEnv();
   displayOldLinkWarning();
   document.body.classList.add('appear');
-
-  // this is a temporary fix for a preview URL mismatch
-  try {
-    tempRedirect();
-  } catch (e) {
-    // something went wrong
-    console.log(`temp redirect failed ${e.message}`);
-  }
 }
 
 window.spark = {};
