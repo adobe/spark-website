@@ -1184,7 +1184,7 @@ async function decoratePage() {
 window.spark = {};
 
 function setupImageErrorDetection() {
-  document.querySelectorAll('img').forEach(($img) => {
+  document.querySelectorAll('img, picture source').forEach(($img) => {
     $img.addEventListener('error', () => {
       console.error('img on error');
       resetAttribute($img, 'src', true);
