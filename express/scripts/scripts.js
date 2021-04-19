@@ -1185,18 +1185,16 @@ window.spark = {};
 
 function setupImageErrorDetection() {
   document.querySelectorAll('img, picture source').forEach(($img) => {
-    $img.addEventListener('error', () => {
-      console.error('img on error');
+    if (!$img.complete) {
+      $img.addEventListener('error', () => {
+        console.error('img on error');
+        resetAttribute($img, 'src', true);
+      });
+    } else if ($img.width === 0 && $img.height === 0) {
+      // a loaded img with w=0 anh h-0 is potentially a broken image
+      console.log(`detected potential broken image ${$img.src}`);
       resetAttribute($img, 'src', true);
-    });
-    $img.addEventListener('abort', () => {
-      console.error('img on abort');
-      resetAttribute($img, 'src', true);
-    });
-    $img.addEventListener('stalled', () => {
-      console.error('img on stalled');
-      resetAttribute($img, 'src', true);
-    });
+    }
   });
 }
 
