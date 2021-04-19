@@ -1187,12 +1187,12 @@ function setupImageErrorDetection() {
   document.querySelectorAll('img').forEach(($img) => {
     if (!$img.complete) {
       $img.addEventListener('error', () => {
-        console.warning(`detected potential broken image ${$img.src} - trying without webp`);
+        console.warn(`detected potential broken image ${$img.src} - trying without webp`);
         resetAttribute($img, 'src', true);
       });
     } else if ($img.width === 0 && $img.height === 0) {
       // a loaded img with w=0 anh h-0 is potentially a broken image
-      console.warning(`detected potential broken image (0,0) ${$img.src} - trying without webp`);
+      console.warn(`detected potential broken image (0,0) ${$img.src} - trying without webp`);
       resetAttribute($img, 'src', true);
     }
   });
