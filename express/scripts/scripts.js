@@ -1187,7 +1187,7 @@ function setupImageErrorDetection() {
   document.querySelectorAll('img').forEach(($img) => {
     if (!$img.complete) {
       $img.addEventListener('error', () => {
-        console.warn(`detected potential broken image ${$img.src} - trying without webp`);
+        console.warn(`detected broken image ${$img.src} - trying without webp`);
         resetAttribute($img, 'src', true);
       });
     } else if ($img.width === 0 && $img.height === 0) {
