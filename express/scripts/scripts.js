@@ -966,10 +966,10 @@ export function getOptimizedImageURL(src, noWebp) {
   return (result);
 }
 
-function resetAttribute($elem, attrib, force) {
+function resetAttribute($elem, attrib, noWebp) {
   const src = $elem.getAttribute(attrib);
   if (src) {
-    const oSrc = getOptimizedImageURL(src, force);
+    const oSrc = getOptimizedImageURL(src, noWebp);
     if (oSrc !== src) {
       $elem.setAttribute(attrib, oSrc);
     }
@@ -1186,6 +1186,15 @@ window.spark = {};
 function setupImageErrorDetection() {
   document.querySelectorAll('img').forEach(($img) => {
     $img.addEventListener('error', () => {
+      console.error('img on error');
+      resetAttribute($img, 'src', true);
+    });
+    $img.addEventListener('abort', () => {
+      console.error('img on abort');
+      resetAttribute($img, 'src', true);
+    });
+    $img.addEventListener('stalled', () => {
+      console.error('img on stalled');
       resetAttribute($img, 'src', true);
     });
   });
