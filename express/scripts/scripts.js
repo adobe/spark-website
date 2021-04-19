@@ -943,14 +943,14 @@ function checkWebpFeature(callback) {
   }
 }
 
-export function getOptimizedImageURL(src) {
+export function getOptimizedImageURL(src, noWebp) {
   const url = new URL(src, window.location.href);
   let result = src;
   const { pathname, search } = url;
   if (pathname.includes('media_')) {
     const usp = new URLSearchParams(search);
     usp.delete('auto');
-    if (!supportsWebp()) {
+    if (noWebp || !supportsWebp()) {
       if (pathname.endsWith('.png')) {
         usp.set('format', 'png');
       } else if (pathname.endsWith('.gif')) {
@@ -966,10 +966,10 @@ export function getOptimizedImageURL(src) {
   return (result);
 }
 
-function resetAttribute($elem, attrib) {
+function resetAttribute($elem, attrib, force) {
   const src = $elem.getAttribute(attrib);
   if (src) {
-    const oSrc = getOptimizedImageURL(src);
+    const oSrc = getOptimizedImageURL(src, force);
     if (oSrc !== src) {
       $elem.setAttribute(attrib, oSrc);
     }
@@ -1182,6 +1182,16 @@ async function decoratePage() {
 }
 
 window.spark = {};
+
+function setupImageErrorDetection() {
+  document.querySelectorAll('img').forEach(($img) => {
+    $img.addEventListener('error', () => {
+      resetAttribute($img, 'src', true);
+    });
+  });
+}
+
+setupImageErrorDetection();
 decoratePage();
 
 /* performance instrumentation */
