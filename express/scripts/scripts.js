@@ -781,6 +781,7 @@ async function decorateTesting() {
   if ((await checkTesting(window.location.href) && (martech !== 'off') && (martech !== 'delay')) || martech === 'rush') {
     // eslint-disable-next-line no-console
     console.log('rushing martech');
+    window.spark.martech = 'rush';
     loadScript('/express/scripts/martech.js', null, 'module');
   }
 
