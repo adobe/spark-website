@@ -62,9 +62,9 @@ w.marketingtech = {
     target: true,
   },
 };
-w.targetGlobalSettings = {
-  bodyHidingEnabled: false,
-};
+
+w.targetGlobalSettings = w.targetGlobalSettings || {};
+w.targetGlobalSettings.bodyHidingEnabled = (w.spark.martech === 'rush');
 
 loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   /* eslint-disable no-underscore-dangle */
