@@ -147,6 +147,61 @@ function buildUrl(optionUrl, optionPlan, country, language) {
   return planUrl.href;
 }
 
+function sendPlanAnalyticsEvent(adobeEventName, sparkEventName, buttonId, planOption) {
+  const option = {
+    id: planOption.id,
+    position: planOption,
+    plan: planOption.plan,
+    name: planOption.name,
+    price: planOption.priceUnformatted,
+    frequency: planOption.frequency,
+    currency: planOption.currency,
+  };
+  digitalData._set('primaryEvent.eventInfo.eventName', adobeEventName);
+  digitalData._set('primaryEvent.eventData.buttonId', buttonId);
+  digitalData._set('spark.eventData.eventName', sparkEventName);
+  digitalData._set('primaryProduct.productInfo.amountWithoutTax', option.price);
+  digitalData._set('primaryProduct.productInfo.billingFrequency', option.frequency);
+  digitalData._set('primaryProduct.productInfo.cardPosition', option.position);
+  digitalData._set('primaryProduct.productInfo.commitmentType', option.frequency);
+  digitalData._set('primaryProduct.productInfo.currencyCode', option.currency);
+  digitalData._set('primaryProduct.productInfo.offerId', option.id);
+  digitalData._set('primaryProduct.productInfo.price', option.price);
+  digitalData._set('primaryProduct.productInfo.productName', `${option.plan} - ${option.name}`);
+  digitalData._set('primaryProduct.productInfo.quantity', 1);
+  digitalData._set('spark.eventData.contextualData4', `billingFrequency:${option.frequency}`);
+  digitalData._set('spark.eventData.contextualData5', `cardPosition:${option.position}`);
+  digitalData._set('spark.eventData.contextualData6', `commitmentType:${option.frequency}`);
+  digitalData._set('spark.eventData.contextualData7', `currencyCode:${option.currency}`);
+  digitalData._set('spark.eventData.contextualData9', `offerId:${option.id}`);
+  digitalData._set('spark.eventData.contextualData10', `price:${option.price}`);
+  digitalData._set('spark.eventData.contextualData12', `productName:${option.plan} - ${option.name}`);
+  digitalData._set('spark.eventData.contextualData14', 'quantity:1');
+  _satellite.track('event', { digitalData: digitalData._snapshot() });
+  digitalData._delete('primaryEvent.eventInfo.eventName');
+  digitalData._delete('spark.eventData.eventName');
+  digitalData._delete('primaryEvent.eventInfo.eventName');
+  digitalData._delete('spark.eventData.eventName');
+  digitalData._delete('primaryProduct.productInfo.amountWithoutTax');
+  digitalData._delete('primaryProduct.productInfo.billingFrequency');
+  digitalData._delete('primaryProduct.productInfo.cardPosition');
+  digitalData._delete('primaryProduct.productInfo.commitmentType');
+  digitalData._delete('primaryProduct.productInfo.currencyCode');
+  digitalData._delete('primaryProduct.productInfo.offerId');
+  digitalData._delete('primaryProduct.productInfo.price');
+  digitalData._delete('primaryProduct.productInfo.productName');
+  digitalData._delete('primaryProduct.productInfo.quantity');
+  digitalData._delete('spark.eventData.contextualData3');
+  digitalData._delete('spark.eventData.contextualData4');
+  digitalData._delete('spark.eventData.contextualData5');
+  digitalData._delete('spark.eventData.contextualData6');
+  digitalData._delete('spark.eventData.contextualData7');
+  digitalData._delete('spark.eventData.contextualData9');
+  digitalData._delete('spark.eventData.contextualData10');
+  digitalData._delete('spark.eventData.contextualData12');
+  digitalData._delete('spark.eventData.contextualData14');
+}
+
 function selectPlanAnalytics($plan, options) {
   const $cta = $plan.querySelector('.button');
   $cta.addEventListener('click', (e) => {
@@ -154,15 +209,7 @@ function selectPlanAnalytics($plan, options) {
     const $plans = $optionPlan.closest('.pricing-plans');
     const { optionId } = $optionPlan.dataset;
     const optionData = options[optionId];
-    const option = {
-      id: optionData.id,
-      position: Array.prototype.slice.call($plans.children).indexOf($plan) + 1,
-      plan: optionData.plan,
-      name: optionData.name,
-      price: optionData.priceUnformatted,
-      frequency: optionData.frequency,
-      currency: optionData.currency,
-    };
+    optionData.position = Array.prototype.slice.call($plans.children).indexOf($plan) + 1;
     let adobeEventName = 'adobe.com:express:CTA:';
     let sparkEventName;
     let buttonId;
@@ -171,95 +218,22 @@ function selectPlanAnalytics($plan, options) {
     if ($cta.hostname.includes('commerce.adobe.com') || $cta.hostname.includes('commerce-stg.adobe.com')) {
       // individual
       if ($cta.search.includes('spark.adobe.com') || $cta.search.includes('adobeprojectm.com')) {
-        buttonId = `individual:${option.position}:buyNow:Click`;
-        adobeEventName += `pricing:individual:${option.position}:buyNow:Click`;
+        buttonId = `individual:${optionData.position}:buyNow:Click`;
+        adobeEventName += `pricing:individual:${optionData.position}:buyNow:Click`;
         // team
       } else if ($cta.search.includes('adminconsole.adobe.com')) {
-        buttonId = `team:${option.position}:buyNow:Click`;
-        adobeEventName += `pricing:team:${option.position}:buyNow:Click`;
+        buttonId = `team:${optionData.position}:buyNow:Click`;
+        adobeEventName += `pricing:team:${optionData.position}:buyNow:Click`;
       }
       sparkEventName = 'beginPurchaseFlow';
       // anything else
     } else {
-      buttonId = `starter:${option.position}:buyNow:Click`;
-      adobeEventName += `pricing:starter:${option.position}:getStarted:Click`;
+      buttonId = `starter:${optionData.position}:buyNow:Click`;
+      adobeEventName += `pricing:starter:${optionData.position}:getStarted:Click`;
       sparkEventName = 'pricing:ctaPressed';
     }
 
-    digitalData._set('primaryEvent.eventInfo.eventName', adobeEventName);
-    digitalData._set('primaryEvent.eventData.buttonId', buttonId);
-    digitalData._set('spark.eventData.eventName', sparkEventName);
-    digitalData._set('primaryProduct.productInfo.amountWithoutTax', option.price);
-    digitalData._set('primaryProduct.productInfo.billingFrequency', option.frequency);
-    digitalData._set('primaryProduct.productInfo.cardPosition', option.position);
-    digitalData._set('primaryProduct.productInfo.commitmentType', option.frequency);
-    digitalData._set('primaryProduct.productInfo.currencyCode', option.currency);
-    digitalData._set('primaryProduct.productInfo.offerId', option.id);
-    digitalData._set('primaryProduct.productInfo.price', option.price);
-    digitalData._set('primaryProduct.productInfo.productName', `${option.plan} - ${option.name}`);
-    digitalData._set('primaryProduct.productInfo.quantity', 1);
-    //   primaryProduct: {
-    //     productInfo: {
-    //       amountWithoutTax:'79.99',
-    //       billingFrequency:'MONTHLY',
-    //       cardPosition:'1',
-    //       commitmentType:'YEAR',
-    //       currencyCode:'USD',
-    //       label:'ccle_direct_indirect_team',//
-    //       offerId:'08A2CD1688E89927614A5F402329DB5B',
-    //       price:'59.99',
-    //       productCode:'ccle_direct_indirect_team',
-    //       productName: '', //product Name -> 'Creative Cloud All Apps'
-    // or as per the details available of the product
-    //       sku:'65296994',
-    //       quantity:''//Number of licenses
-    //     }
-    //   }
-    digitalData._set('spark.eventData.contextualData4', `billingFrequency:${option.frequency}`);
-    digitalData._set('spark.eventData.contextualData5', `cardPosition:${option.position}`);
-    digitalData._set('spark.eventData.contextualData6', `commitmentType:${option.frequency}`);
-    digitalData._set('spark.eventData.contextualData7', `currencyCode:${option.currency}`);
-    digitalData._set('spark.eventData.contextualData9', `offerId:${option.id}`);
-    digitalData._set('spark.eventData.contextualData10', `price:${option.price}`);
-    digitalData._set('spark.eventData.contextualData12', `productName:${option.plan} - ${option.name}`);
-    digitalData._set('spark.eventData.contextualData14', 'quantity:1');
-    // spark.eventData.contextualData3: 'amountWithoutTax:79.99' or
-    // whatever is set in primaryProduct.productInfo.amountWithoutTax
-    // spark.eventData.contextualData4: 'billingFrequency:MONTHLY'
-    // spark.eventData.contextualData5: 'cardPosition:1'
-    // spark.eventData.contextualData6: 'commitmentType:YEAR'
-    // spark.eventData.contextualData7: 'currencyCode:USD'
-    // spark.eventData.contextualData8: 'label:ccle_direct_indirect_team'
-    // spark.eventData.contextualData9: 'offerId:08A2CD1688E89927614A5F402329DB5B'
-    // spark.eventData.contextualData10: 'price:59.99'
-    // spark.eventData.contextualData11: 'productCode:ccle_direct_indirect_team'
-    // spark.eventData.contextualData12: 'productName: '', //product Name ->
-    // 'Creative Cloud All Apps' or as per the details available of the product
-    // spark.eventData.contextualData13: 'sku:65296994'
-    // spark.eventData.contextualData14: 'quantity:''//Number of licenses"
-    _satellite.track('event', { digitalData: digitalData._snapshot() });
-    digitalData._delete('primaryEvent.eventInfo.eventName');
-    digitalData._delete('spark.eventData.eventName');
-    digitalData._delete('primaryEvent.eventInfo.eventName');
-    digitalData._delete('spark.eventData.eventName');
-    digitalData._delete('primaryProduct.productInfo.amountWithoutTax');
-    digitalData._delete('primaryProduct.productInfo.billingFrequency');
-    digitalData._delete('primaryProduct.productInfo.cardPosition');
-    digitalData._delete('primaryProduct.productInfo.commitmentType');
-    digitalData._delete('primaryProduct.productInfo.currencyCode');
-    digitalData._delete('primaryProduct.productInfo.offerId');
-    digitalData._delete('primaryProduct.productInfo.price');
-    digitalData._delete('primaryProduct.productInfo.productName');
-    digitalData._delete('primaryProduct.productInfo.quantity');
-    digitalData._delete('spark.eventData.contextualData3');
-    digitalData._delete('spark.eventData.contextualData4');
-    digitalData._delete('spark.eventData.contextualData5');
-    digitalData._delete('spark.eventData.contextualData6');
-    digitalData._delete('spark.eventData.contextualData7');
-    digitalData._delete('spark.eventData.contextualData9');
-    digitalData._delete('spark.eventData.contextualData10');
-    digitalData._delete('spark.eventData.contextualData12');
-    digitalData._delete('spark.eventData.contextualData14');
+    sendPlanAnalyticsEvent(adobeEventName, sparkEventName, buttonId, optionData);
   });
 }
 
@@ -341,16 +315,12 @@ async function selectPlanOption($plan, option) {
 async function addDropdownEventListener($plan, options) {
   const $dropdown = $plan.querySelector('.plan-dropdown');
 
-  $dropdown.addEventListener('change', (e) => {
+  $dropdown.addEventListener('change', async (e) => {
     const option = options[e.target.selectedIndex];
-    selectPlanOption($plan, option);
-    option.frequency = option['Analytics Frequency do-not-translate'];
-
-    digitalData._set('primaryEvent.eventInfo.eventName', `adobe.com:express:CTA:pricing:${option.frequency}:dropDown:Click`);
-    digitalData._set('spark.eventData.eventName', 'pricing:commitmentTypeSelected');
-    _satellite.track('event', { digitalData: digitalData._snapshot() });
-    digitalData._delete('spark.eventData.eventName');
-    digitalData._delete('primaryEvent.eventInfo.eventName');
+    await selectPlanOption($plan, option);
+    const adobeEventName = `adobe.com:express:CTA:pricing:${option.frequency}:dropDown:Click`;
+    const sparkEventName = 'pricing:commitmentTypeSelected';
+    sendPlanAnalyticsEvent(adobeEventName, sparkEventName, null, option);
   });
 }
 
