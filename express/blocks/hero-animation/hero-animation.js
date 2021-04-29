@@ -30,7 +30,7 @@ function timecodeToSeconds(timecode) {
 function adjustOverlayHeight($video, $overlay) {
   $overlay.style.minHeight = `${$video.clientHeight}px`;
 }
-export default function decorate($block, name, doc) {
+export default function decorate($block) {
   const $rows = [...$block.children];
   const attributions = [];
   $rows.forEach(($div, i) => {
