@@ -77,10 +77,8 @@ export default function decorate($block, name, doc) {
           attributions.forEach((att) => {
             if ($video.currentTime >= att.start && $video.currentTime <= att.end) {
               att.$elem.classList.add('appear');
-              console.log(`appear: ${att.$elem}`);
             } else {
               att.$elem.classList.remove('appear');
-              console.log(`disappear: ${att.$elem}`);
             }
           });
         });
