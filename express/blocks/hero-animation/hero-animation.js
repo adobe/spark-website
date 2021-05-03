@@ -28,7 +28,7 @@ function timecodeToSeconds(timecode) {
 }
 
 function adjustOverlayHeight($video, $overlay) {
-  $overlay.style.minHeight = `${$video.clientHeight}px`;
+  $overlay.style.minHeight = `${Math.max($video.clientHeight, 375)}px`;
 }
 export default function decorate($block) {
   const $rows = [...$block.children];
@@ -115,4 +115,5 @@ export default function decorate($block) {
       attributions.push(attribution);
     }
   });
+  $block.classList.add('appear');
 }

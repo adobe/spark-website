@@ -1,3 +1,9 @@
+main .hero-animation.appear {
+    opacity: 1;
+    height: unset;
+}
+
+
 main .hero-animation-container {
     position: relative;
 }
@@ -12,10 +18,12 @@ main .hero-animation video {
     z-index: -1;
     object-fit: cover;
     width: 100vw;
+    min-height: 375px;
+    object-position: 97%;
 }
 
 main .hero-animation .hero-animation-overlay {
-    padding-top: 70%;
+    padding-top: max(70%, 450px);
 }
 
 main .hero-animation .icon {
@@ -28,7 +36,7 @@ main .hero-animation .hero-animation-attribution {
     opacity: 0;
     transition: opacity 500ms ease-in-out;
     position: absolute;
-    top: calc(100vw * 0.38);
+    top: 350px;
     left: 50px;
     display: flex;
     text-align: left;
