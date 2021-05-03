@@ -722,14 +722,9 @@ main .section-wrapper > div {
 
 /* jank protection for async sections */
 
-main .page-list-container {
+main .page-list-container, main .pricing, main .hero-animation {
   opacity: 0;
   height: 100vh;
   transition: opacity 100ms;
 }
 
-main .page-list-container, main .pricing {
-  opacity: 0;
-  height: 100vh;
-  transition: opacity 100ms;
-}
