@@ -9,7 +9,16 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/*  global fetch document */
+/*  global fetch document window */
+
+const locales = ['', '/br', '/cn', '/it', '/de', '/dk', '/fr', '/es', '/fi', '/jp', '/kr', '/nl', '/no', '/se', '/tw'];
+let headerColsLookup = {};
+
+const status = {
+  numRowsDisplayed: 0,
+  numRowsLoaded: 0,
+  publishQueue: [],
+};
 
 function createTag(name, attrs) {
   const el = document.createElement(name);
@@ -35,18 +44,17 @@ async function fetchJson(url) {
 }
 
 async function fetchIndex(prefix) {
-  const url = `${prefix}/express/query-index.json`;
-  const blogurl = `${prefix}/express/learn/blog/query-index.json`;
+  const url = `${prefix}/query-index.json`;
+  const blogurl = `${prefix}/learn/blog/query-index.json`;
   const index = [...await fetchJson(url), ...await fetchJson(blogurl)];
   index.sort((e1, e2) => e1.path.localeCompare(e2.path));
   console.log(`total index length: ${index.length}`);
   return (index);
 }
 
-async function getPages() {
+async function getPages(prefixes) {
   const index = [];
-  const locales = ['', '/br', '/cn', '/it', '/de', '/dk', '/fr', '/es', '/fi', '/jp', '/kr', '/nl', '/no', '/se', '/tw'];
-  for (const prefix of locales) {
+  for (const prefix of prefixes) {
     // eslint-disable-next-line no-await-in-loop
     const segment = await fetchIndex(prefix);
     index.push(...segment);
@@ -79,8 +87,96 @@ function addToMeta(meta, props) {
   });
 }
 
+const $filter = document.getElementById('filter');
+
+function updateStatus() {
+  const $status = document.getElementById('status');
+  let publishStatus = '';
+  console.log(status);
+  if (status.publishQueue.length) {
+    publishStatus = `${status.publishQueue.length} in publish queue, `;
+  }
+  $status.innerHTML = `${publishStatus} Showing ${status.numRowsDisplayed}/${status.numRowsLoaded} pages`;
+}
+
+function filterPages() {
+  const filterStr = $filter.value;
+  const filterMatches = filterStr.matchAll(/([a-z]*(:?(".*"|[a-z]*)))/g);
+  const filtersArr = [...filterMatches].map((m) => m[0]).filter((f) => f);
+  const filters = filtersArr.map((str) => {
+    if (str.includes(':')) {
+      const [scope, filterQuoted] = str.split(':');
+      const filter = filterQuoted.replace(/"/g, '');
+      return ({ scope, filter });
+    } else {
+      return ({ scope: 'global', filter: str });
+    }
+  });
+  let displayCount = 0;
+  document.querySelectorAll('main .pages tr.row').forEach(($tr) => {
+    if (filters.every((f) => {
+      let matched = false;
+      let textContent = '';
+      if (f.scope === 'global') {
+        textContent = $tr.textContent.toLowerCase();
+      } else if (headerColsLookup[f.scope]) {
+        textContent = $tr.children[headerColsLookup[f.scope]].textContent.toLowerCase();
+      }
+
+      if (textContent.includes(f.filter.toLowerCase())) {
+        matched = true;
+      }
+      return matched;
+    })) {
+      $tr.classList.remove('hidden');
+      $tr.classList.add('show');
+      displayCount += 1;
+    } else {
+      $tr.classList.add('hidden');
+      $tr.classList.remove('show');
+    }
+  });
+  status.numRowsDisplayed = displayCount;
+  updateStatus();
+}
+
+async function publish(path) {
+  const purgeURL = new URL(path, window.location.href);
+  /* eslint-disable no-console */
+  console.log(`purging ${purgeURL.href}`);
+  const xfh = ['spark-website--adobe.hlx.live'];
+  const resp = await fetch(purgeURL.href, {
+    method: 'POST',
+    headers: {
+      'X-Method-Override': 'HLXPURGE',
+      'X-Forwarded-Host': xfh.join(', '),
+    },
+  });
+  const json = await resp.json();
+  console.log(JSON.stringify(json));
+  /* eslint-enable no-console */
+}
+
+async function processPublishQueue() {
+  const q = status.publishQueue;
+  while (q.length) {
+    const path = q[0];
+
+    // eslint-disable-next-line no-await-in-loop
+    await publish(path);
+    q.shift();
+    updateStatus();
+  }
+}
+
 async function displayURLs() {
-  const pages = await getPages();
+  const $loading = document.getElementById('loading');
+  $loading.classList.remove('hidden');
+
+  const $select = document.getElementById('prefix-selector');
+  const prefix = $select.value;
+  const prefixes = prefix ? [prefix] : locales.map((l) => `${l}/express`);
+  const pages = await getPages(prefixes);
   const metadataRaw = await fetchJson('/metadata.json');
   const metadata = metadataRaw.filter((row) => {
     row.URL = row.URL.trim();
@@ -103,15 +199,20 @@ async function displayURLs() {
   });
 
   const $pages = document.querySelector('.pages');
+  $pages.innerHTML = '';
+  headerColsLookup = {};
 
   const $table = createTag('table');
-  const $tr = createTag('tr');
-  ['Page', ...cols].forEach((e) => {
+  const $tr = createTag('tr', { class: 'header' });
+  ['Page', ...cols].forEach((e, i) => {
     const $th = createTag('th', { class: 'header' });
     $th.innerHTML = e;
+    headerColsLookup[e.toLowerCase()] = i;
     $tr.appendChild($th);
   });
   $table.appendChild($tr);
+
+  status.numRowsLoaded = pages.length;
 
   pages.forEach((page) => {
     const path = page.path.split('.')[0];
@@ -124,9 +225,17 @@ async function displayURLs() {
     if (simplePaths.paths.includes(path)) {
       addToMeta(meta, simplePaths.lookup[path]);
     }
-    const $tdr = createTag('tr');
+    const $tdr = createTag('tr', { class: 'row' });
     const $th = createTag('th', { class: 'row' });
-    $th.innerHTML = `<a href="${path}">${path}</a>`;
+    $th.innerHTML = `<a href="${path}">${path}</a>
+    <div class="tools"><a href="${path}.lnk" class="button">Edit</a><button class="publish">Publish</button></div>`;
+    $th.querySelector('button.publish').addEventListener('click', () => {
+      status.publishQueue.push(path);
+      if (status.publishQueue.length === 1) {
+        processPublishQueue();
+      }
+      updateStatus();
+    });
     $tdr.appendChild($th);
     cols.forEach((col) => {
       const $td = createTag('td');
@@ -136,6 +245,53 @@ async function displayURLs() {
     $table.appendChild($tdr);
   });
   $pages.appendChild($table);
+  filterPages();
+  $loading.classList.add('hidden');
 }
 
+function populatePrefixSelect() {
+  const $select = document.getElementById('prefix-selector');
+  locales.forEach((locale) => {
+    const $option = createTag('option', { value: `${locale}/express` });
+    $option.innerHTML = `${locale}/express/`;
+    $select.appendChild($option);
+  });
+  const $option = createTag('option', { value: '' });
+  $option.innerHTML = '(all)';
+  $select.appendChild($option);
+  $select.addEventListener('change', () => {
+    displayURLs();
+  });
+}
+
+populatePrefixSelect();
+
 displayURLs();
+
+document.getElementById('copy').addEventListener('click', () => {
+  const $ta = document.getElementById('copybuffer');
+
+  const $pages = document.querySelectorAll('main .pages tr.row.show');
+  const rows = [];
+  $pages.forEach(($tr) => {
+    const row = [];
+    [...$tr.children].forEach(($cell, i) => {
+      let data = $cell.textContent;
+      if (!i) data = data.replace('EditPublish', '').trim();
+      row.push(data);
+    });
+    rows.push(row.join('\t'));
+  });
+  $ta.value = rows.join('\n');
+
+  $ta.select();
+  $ta.setSelectionRange(0, 9999999);
+
+  document.execCommand('copy');
+
+  window.alert(`copied ${$pages.length} rows to clipboard`);
+});
+
+$filter.addEventListener('keyup', () => {
+  filterPages();
+});

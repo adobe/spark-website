@@ -16,6 +16,20 @@
   const sk = window.hlx && window.hlx.sidekick ? window.hlx.sidekick : window.hlxSidekick;
   if (typeof sk !== 'object') return;
 
+  // METADATA --------------------------------------------------------------------
+
+  sk.add({
+    id: 'metadata',
+    condition: (s) => s.isEditor() && (s.location.pathname.includes('/:w:/') || s.location.href.includes('metadata.xlsx')),
+    button: {
+      text: 'Meta Data Inspector',
+      action: () => {
+        const { config } = sk;
+        window.open(`https://${config.host || config.innerHost}/tools/metadata/inspector.html`, 'hlx-sidekick-spark-metadata-inspector');
+      },
+    },
+  });
+
   // TEMPLATES --------------------------------------------------------------------
 
   sk.add({
