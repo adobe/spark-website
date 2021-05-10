@@ -59,6 +59,12 @@ main .pages tr.row th.row {
   position: relative;
 }
 
+
+main .pages tr.row.orange {
+  background-color: rgb(242,204,162);	
+  color: rgb(169,99,36);	
+}
+
 main .pages tr.row:hover {
     color: var(--hlx-sk-bg);
     background-color: var(--hlx-sk-color);
@@ -143,3 +149,30 @@ a.button, button {
     position: absolute;
     top: -1000px;
   }
+
+  .env {
+    display: flex;
+    flex-direction: row;
+    margin-right: 8px;
+  }
+  
+  .env button,
+  .env button.pressed {
+    margin-right: 0;
+    border-right-width: 0;
+    border-radius: 0;
+  }
+  
+  .env > div:first-child button,
+  .env > div:first-child button.pressed {
+    border-top-left-radius: var(--hlx-sk-button-border-radius);
+    border-bottom-left-radius: var(--hlx-sk-button-border-radius);
+  }
+  
+  .env > div:last-child button,
+  .env > div:last-child button.pressed {
+    border-top-right-radius: var(--hlx-sk-button-border-radius);
+    border-bottom-right-radius: var(--hlx-sk-button-border-radius);
+    border-right-width: 1px;
+  }
+

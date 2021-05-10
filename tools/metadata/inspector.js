@@ -13,6 +13,7 @@
 
 const locales = ['', '/br', '/cn', '/it', '/de', '/dk', '/fr', '/es', '/fi', '/jp', '/kr', '/nl', '/no', '/se', '/tw'];
 let headerColsLookup = {};
+let currentView = 'metadata.xlsx';
 
 const status = {
   numRowsDisplayed: 0,
@@ -32,10 +33,12 @@ function createTag(name, attrs) {
 
 async function fetchJson(url) {
   try {
+    // eslint-disable-next-line no-console
     console.log(`fetching ${url}`);
     const start = new Date();
     const resp = await fetch(url, { cache: 'no-store' });
     const json = await resp.json();
+    // eslint-disable-next-line no-console
     console.log(`[${new Date() - start}ms] fetched index ${url}`);
     return (json.data);
   } catch {
@@ -43,12 +46,17 @@ async function fetchJson(url) {
   }
 }
 
+function toClassName(name) {
+  return name && typeof name === 'string'
+    ? name.toLowerCase().replace(/[^0-9a-z]/gi, '-')
+    : '';
+}
+
 async function fetchIndex(prefix) {
   const url = `${prefix}/query-index.json`;
   const blogurl = `${prefix}/learn/blog/query-index.json`;
   const index = [...await fetchJson(url), ...await fetchJson(blogurl)];
   index.sort((e1, e2) => e1.path.localeCompare(e2.path));
-  console.log(`total index length: ${index.length}`);
   return (index);
 }
 
@@ -71,17 +79,17 @@ function convertGlobToRe(glob) {
   let reString = glob.replace(/\*\*/g, '_');
   reString = reString.replace(/\*/g, '[0-9a-z-]*');
   reString = reString.replace(/_/g, '.*');
-  console.log(reString);
   return (new RegExp(reString));
 }
 
 function addToMeta(meta, props) {
   const keys = Object.keys(props);
-  keys.forEach((key) => {
+  const mkeys = Object.keys(props).map((e) => toClassName(e));
+  keys.forEach((key, i) => {
     if (!['re', 'URL'].includes(key)) {
       const prop = props[key];
       if (prop) {
-        meta[key] = prop;
+        meta[mkeys[i]] = prop;
       }
     }
   });
@@ -92,16 +100,15 @@ const $filter = document.getElementById('filter');
 function updateStatus() {
   const $status = document.getElementById('status');
   let publishStatus = '';
-  console.log(status);
   if (status.publishQueue.length) {
     publishStatus = `${status.publishQueue.length} in publish queue, `;
   }
-  $status.innerHTML = `${publishStatus} Showing ${status.numRowsDisplayed}/${status.numRowsLoaded} pages`;
+  $status.innerHTML = `${publishStatus} Showing ${status.numRowsDisplayed} / ${status.numRowsLoaded} pages`;
 }
 
 function filterPages() {
   const filterStr = $filter.value;
-  const filterMatches = filterStr.matchAll(/([a-z]*(:?(".*"|[a-z]*)))/g);
+  const filterMatches = filterStr.matchAll(/([a-z-]*(:?(".*"|[a-z-]*)))/g);
   const filtersArr = [...filterMatches].map((m) => m[0]).filter((f) => f);
   const filters = filtersArr.map((str) => {
     if (str.includes(':')) {
@@ -169,23 +176,9 @@ async function processPublishQueue() {
   }
 }
 
-async function displayURLs() {
-  const $loading = document.getElementById('loading');
-  $loading.classList.remove('hidden');
-
-  const $select = document.getElementById('prefix-selector');
-  const prefix = $select.value;
-  const prefixes = prefix ? [prefix] : locales.map((l) => `${l}/express`);
-  const pages = await getPages(prefixes);
-  const metadataRaw = await fetchJson('/metadata.json');
-  const metadata = metadataRaw.filter((row) => {
-    row.URL = row.URL.trim();
-    return isValidPath(row.URL);
-  });
-
+function createTable(pages, metadata, view) {
   const patterns = [];
-  const cols = Object.keys(metadata[0]);
-  cols.shift();
+  let table = {};
 
   const simplePaths = { paths: [], lookup: {} };
   metadata.forEach((row) => {
@@ -198,13 +191,116 @@ async function displayURLs() {
     }
   });
 
+  if (view === 'metadata.xlsx') {
+    const cols = Object.keys(metadata[0]).map((e) => toClassName(e));
+    cols.shift();
+    cols.pop();
+
+    const headers = ['page', ...cols];
+    const rows = [];
+
+    pages.forEach((page) => {
+      const path = page.path.split('.')[0];
+      const meta = {};
+      const data = [];
+      patterns.forEach((row) => {
+        if (row.re.test(path)) {
+          addToMeta(meta, row);
+        }
+      });
+      if (simplePaths.paths.includes(path)) {
+        addToMeta(meta, simplePaths.lookup[path]);
+      }
+      cols.forEach((col) => {
+        data.push(meta[col] || '');
+      });
+      rows.push({ path, data });
+    });
+    table = { headers, rows };
+  }
+
+  if (view === 'index') {
+    const cols = Object.keys(pages[0]).map((e) => toClassName(e));
+    cols.shift();
+
+    const headers = ['page', 'short-title', 'title'];
+    const srcHeaders = ['shortTitle', 'title'];
+
+    const rows = [];
+
+    pages.forEach((page) => {
+      const path = page.path.split('.')[0];
+      const data = [];
+      srcHeaders.forEach((key) => data.push(page[key] ? page[key] : ''));
+      rows.push({ path, data });
+    });
+    table = { headers, rows };
+  }
+
+  if (view === 'diff') {
+    const cols = Object.keys(pages[0]).map((e) => toClassName(e));
+    cols.shift();
+
+    const headers = ['page', 'short-title', 'title'];
+    const srcHeaders = ['shortTitle', 'title'];
+    const metaHeaders = ['Short Title', 'Title'];
+
+    const rows = [];
+
+    pages.forEach((page) => {
+      const path = page.path.split('.')[0];
+      const data = [];
+      let style = '';
+      const metaItem = simplePaths.lookup[path];
+      srcHeaders.forEach((key, i) => {
+        const pageValue = page[key] ? page[key] : '';
+        const metaValue = metaItem ? metaItem[metaHeaders[i]] : '';
+        if (metaValue && (metaValue !== pageValue)) {
+          data.push(`[metadata.xlsx]<br>${metaValue}<br><br>[index]<br>${pageValue}`);
+          style = 'orange';
+        } else {
+          data.push(pageValue);
+        }
+      });
+      rows.push({ path, data, style });
+    });
+    table = { headers, rows };
+  }
+
+  return (table);
+}
+
+async function loadData() {
+  const $loading = document.getElementById('loading');
+  $loading.classList.remove('hidden');
+
+  const $select = document.getElementById('prefix-selector');
+  const prefix = $select.value;
+  const prefixes = prefix ? [prefix] : locales.map((l) => `${l}/express`);
+  const pages = await getPages(prefixes);
+
+  status.numRowsLoaded = pages.length;
+
+  const metadataRaw = await fetchJson('/metadata.json');
+  const metadata = metadataRaw.filter((row) => {
+    row.URL = row.URL.trim();
+    return isValidPath(row.URL);
+  });
+  $loading.classList.add('hidden');
+  return ({ metadata, pages });
+}
+
+async function displayPages(data, view) {
+  const { pages, metadata } = data;
+  const table = createTable(pages, metadata, view);
+
   const $pages = document.querySelector('.pages');
   $pages.innerHTML = '';
   headerColsLookup = {};
 
   const $table = createTag('table');
   const $tr = createTag('tr', { class: 'header' });
-  ['Page', ...cols].forEach((e, i) => {
+  table.headers.forEach((e, i) => {
     const $th = createTag('th', { class: 'header' });
     $th.innerHTML = e;
     headerColsLookup[e.toLowerCase()] = i;
@@ -212,20 +308,9 @@ async function displayURLs() {
   });
   $table.appendChild($tr);
 
-  status.numRowsLoaded = pages.length;
-
-  pages.forEach((page) => {
-    const path = page.path.split('.')[0];
-    const meta = {};
-    patterns.forEach((row) => {
-      if (row.re.test(path)) {
-        addToMeta(meta, row);
-      }
-    });
-    if (simplePaths.paths.includes(path)) {
-      addToMeta(meta, simplePaths.lookup[path]);
-    }
-    const $tdr = createTag('tr', { class: 'row' });
+  table.rows.forEach((page) => {
+    const { path } = page;
+    const $tdr = createTag('tr', { class: `row ${page.style}` });
     const $th = createTag('th', { class: 'row' });
     $th.innerHTML = `<a href="${path}">${path}</a>
     <div class="tools"><a href="${path}.lnk" class="button">Edit</a><button class="publish">Publish</button></div>`;
@@ -237,17 +322,18 @@ async function displayURLs() {
       updateStatus();
     });
     $tdr.appendChild($th);
-    cols.forEach((col) => {
+    page.data.forEach((td) => {
       const $td = createTag('td');
-      $td.innerHTML = meta[col] || '';
+      $td.innerHTML = td;
       $tdr.appendChild($td);
     });
     $table.appendChild($tdr);
   });
   $pages.appendChild($table);
   filterPages();
-  $loading.classList.add('hidden');
 }
+
+let pageData = {};
 
 function populatePrefixSelect() {
   const $select = document.getElementById('prefix-selector');
@@ -260,13 +346,19 @@ function populatePrefixSelect() {
   $option.innerHTML = '(all)';
   $select.appendChild($option);
   $select.addEventListener('change', () => {
-    displayURLs();
+    pageData = loadData();
+    displayPages(pageData, currentView);
   });
 }
 
 populatePrefixSelect();
 
-displayURLs();
+async function initPagesTable() {
+  pageData = await loadData();
+  displayPages(pageData, currentView);
+}
+
+initPagesTable();
 
 document.getElementById('copy').addEventListener('click', () => {
   const $ta = document.getElementById('copybuffer');
@@ -289,9 +381,23 @@ document.getElementById('copy').addEventListener('click', () => {
 
   document.execCommand('copy');
 
+  // eslint-disable-next-line no-alert
   window.alert(`copied ${$pages.length} rows to clipboard`);
 });
 
 $filter.addEventListener('keyup', () => {
   filterPages();
+});
+
+const $switcher = document.getElementById('switcher');
+const $buttons = [...$switcher.querySelectorAll('button')];
+
+$buttons.forEach(($button) => {
+  $button.addEventListener('click', () => {
+    $buttons.forEach(($b) => {
+      $b.className = $button === $b ? 'pressed' : '';
+    });
+    currentView = $button.textContent;
+    displayPages(pageData, currentView);
+  });
 });
