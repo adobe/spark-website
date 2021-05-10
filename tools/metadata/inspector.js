@@ -345,8 +345,8 @@ function populatePrefixSelect() {
   const $option = createTag('option', { value: '' });
   $option.innerHTML = '(all)';
   $select.appendChild($option);
-  $select.addEventListener('change', () => {
-    pageData = loadData();
+  $select.addEventListener('change', async () => {
+    pageData = await loadData();
     displayPages(pageData, currentView);
   });
 }
