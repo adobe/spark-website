@@ -20,7 +20,7 @@
 
   sk.add({
     id: 'metadata',
-    condition: (s) => s.isEditor() && (s.location.pathname.includes('/:w:/') && s.location.href.includes('metadata.xlsx')),
+    condition: (s) => s.isEditor() && s.location.href.includes('metadata.xlsx'),
     button: {
       text: 'Meta Data Inspector',
       action: () => {
