@@ -31,7 +31,7 @@ indices:
         value: |
           attribute(el, 'content')
       sourceHash:
-        select: head > meta[name=x-source-hash
+        select: head > meta[name="x-source-hash"]
         value: |
           attribute(el, 'content')
       category:
@@ -42,6 +42,10 @@ indices:
         select: head > meta[property="article:tag"]
         values: |
           attribute(el, 'content')
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, 'description')
       lastModified:
         select: none
         value: |
