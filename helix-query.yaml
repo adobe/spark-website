@@ -45,7 +45,7 @@ indices:
       description:
         select: head > meta[name="description"]
         value: |
-          attribute(el, 'description')
+          attribute(el, 'content')
       lastModified:
         select: none
         value: |
