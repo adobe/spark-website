@@ -47,9 +47,6 @@
   }
 
   if (sk.config.hlx3) {
-    // use hlx3 outer host
-    sk.config.outerHost = sk.config.outerHost.replace('.hlx.live', '.hlx3.live');
-
     // override publish button
     sk.add({
       override: true,
@@ -57,7 +54,6 @@
       condition: (sidekick) => sidekick.isHelix() && sidekick.config.host
         && !(sidekick.config.byocdn && sidekick.location.host === sidekick.config.host),
       button: {
-        text: '.hlx3',
         action: async (evt) => {
           const { config, location } = sk;
           const path = location.pathname;
@@ -67,7 +63,9 @@
           if (Array.isArray(window.hlx.dependencies)) {
             urls = urls.concat(window.hlx.dependencies);
           }
-          // use hlx3 publishing
+          // hlx2 publishing
+          await Promise.all(urls.map((url) => sk.publish(url)));
+          // hlx3 publishing
           await Promise.all(urls.map((url) => hlx3Publish(config, location, url)));
 
           if (config.host) {
