@@ -57,7 +57,7 @@
       condition: (sidekick) => sidekick.isHelix() && sidekick.config.host
         && !(sidekick.config.byocdn && sidekick.location.host === sidekick.config.host),
       button: {
-        text: 'Publish 3.0',
+        text: '.hlx3',
         action: async (evt) => {
           const { config, location } = sk;
           const path = location.pathname;
