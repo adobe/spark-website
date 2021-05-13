@@ -435,7 +435,8 @@ window.fedsConfig = {
 };
 
 loadScript('https://www.adobe.com/etc.clientlibs/globalnav/clientlibs/base/feds.js', () => {
-  setTimeout(() => {
+  window.addEventListener('feds.events.experience.loaded', () => {
+    console.log('gnav loaded');
     /* attempt to switch link */
     if (window.location.pathname.includes('/create/')
       || window.location.pathname.includes('/discover/')
