@@ -1099,7 +1099,10 @@ export function getHelixEnv() {
 
 /* this is a workaround for a preview URL sidekick mismatch */
 function tempRedirect() {
-  if (window.location && window.location.hostname && window.location.hostname.startsWith('main--')) {
+  if (window.location
+    && window.location.hostname
+    && window.location.hostname.startsWith('main--')
+    && window.location.hostname.endsWith('.hlx.page')) {
     window.location.href = window.location.href.replace('main--', '');
   }
 }
