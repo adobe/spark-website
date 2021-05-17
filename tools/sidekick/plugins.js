@@ -33,7 +33,7 @@
       '?action=publish',
     ].join('');
     /* eslint-disable no-console */
-    console.log(`hlx3: purging ${purgeURL}`);
+    console.log(`hlx3 publishing ${purgeURL}`);
     const resp = await fetch(purgeURL, { method: 'POST' });
     // const json = await resp.json();
     // console.log(JSON.stringify(json));
