@@ -35,8 +35,6 @@
     /* eslint-disable no-console */
     console.log(`hlx3 publishing ${purgeURL}`);
     const resp = await fetch(purgeURL, { method: 'POST' });
-    // const json = await resp.json();
-    // console.log(JSON.stringify(json));
     /* eslint-enable no-console */
     return {
       ok: resp.ok,
@@ -45,48 +43,46 @@
     };
   }
 
-  if (sk.config.hlx3) {
-    // override publish button
-    sk.add({
-      override: true,
-      id: 'publish',
-      condition: (sidekick) => sidekick.isHelix() && sidekick.config.host
-        && !(sidekick.config.byocdn && sidekick.location.host === sidekick.config.host),
-      button: {
-        action: async (evt) => {
-          const { config, location } = sk;
-          const path = location.pathname;
-          sk.showModal(`Publishing ${path}`, true);
-          let urls = [path];
-          // dependencies
-          if (Array.isArray(window.hlx.dependencies)) {
-            urls = urls.concat(window.hlx.dependencies);
-          }
-          // hlx2 publishing
-          await Promise.all(urls.map((url) => sk.publish(url)));
-          // hlx3 publishing
-          await Promise.all(urls.map((url) => hlx3Publish(config, location, url)));
+  // override publish button
+  sk.add({
+    override: true,
+    id: 'publish',
+    condition: (sidekick) => sidekick.isHelix() && sidekick.config.host
+      && !(sidekick.config.byocdn && sidekick.location.host === sidekick.config.host),
+    button: {
+      action: async (evt) => {
+        const { config, location } = sk;
+        const path = location.pathname;
+        sk.showModal(`Publishing ${path}`, true);
+        let urls = [path];
+        // dependencies
+        if (Array.isArray(window.hlx.dependencies)) {
+          urls = urls.concat(window.hlx.dependencies);
+        }
+        // hlx2 publishing
+        await Promise.all(urls.map((url) => sk.publish(url)));
+        // hlx3 publishing
+        await Promise.all(urls.map((url) => hlx3Publish(config, location, url)));
 
-          if (config.host) {
-            sk.showModal('Please wait …', true);
-            // fetch and redirect to production
-            const prodURL = `https://${config.outerHost}${path}`;
-            await fetch(prodURL, { cache: 'reload', mode: 'no-cors' });
-            // eslint-disable-next-line no-console
-            console.log(`redirecting to ${prodURL}`);
-            if (evt.metaKey || evt.which === 2) {
-              window.open(prodURL);
-              sk.hideModal();
-            } else {
-              window.location.href = prodURL;
-            }
+        if (config.host) {
+          sk.showModal('Please wait …', true);
+          // fetch and redirect to production
+          const prodURL = `https://${config.outerHost}${path}`;
+          await fetch(prodURL, { cache: 'reload', mode: 'no-cors' });
+          // eslint-disable-next-line no-console
+          console.log(`redirecting to ${prodURL}`);
+          if (evt.metaKey || evt.which === 2) {
+            window.open(prodURL);
+            sk.hideModal();
           } else {
-            sk.notify('Successfully published');
+            window.location.href = prodURL;
           }
-        },
+        } else {
+          sk.notify('Successfully published');
+        }
       },
-    });
-  }
+    },
+  });
 
   // METADATA --------------------------------------------------------------------
 
