@@ -35,13 +35,12 @@
     /* eslint-disable no-console */
     console.log(`hlx3: purging ${purgeURL}`);
     const resp = await fetch(purgeURL, { method: 'POST' });
-    const json = await resp.json();
-    console.log(JSON.stringify(json));
+    // const json = await resp.json();
+    // console.log(JSON.stringify(json));
     /* eslint-enable no-console */
     return {
-      ok: resp.ok && json && json.$metadata && json.$metadata.httpStatusCode === 200,
+      ok: resp.ok,
       status: resp.status,
-      json,
       path,
     };
   }
