@@ -58,7 +58,7 @@ async function filterBlogPosts(locale, config) {
     /* filter posts by tag and author */
     const f = {};
     for (const name of Object.keys(config)) {
-      const filterNames = ['tag', 'author'];
+      const filterNames = ['tag', 'author', 'category'];
       if (filterNames.includes(name)) {
         const vals = config[name];
         let v = vals;
@@ -77,7 +77,7 @@ async function filterBlogPosts(locale, config) {
       for (const name of Object.keys(f)) {
         let matched = false;
         f[name].forEach((val) => {
-          if (post[name].toLowerCase().includes(val)) {
+          if (post[name] && post[name].toLowerCase().includes(val)) {
             matched = true;
           }
         });
