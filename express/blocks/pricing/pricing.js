@@ -20,11 +20,11 @@ import {
   getIconElement,
 } from '../../scripts/scripts.js';
 
-async function fetchPricingTab(sheet, tab) {
-  const url = `./${sheet}.json?sheet=${tab}`;
+async function fetchPricingTabs(sheet) {
+  const url = `./${sheet}.json`;
   const resp = await fetch(url);
   const json = await resp.json();
-  return json.data;
+  return json;
 }
 
 function buildWordList(header) {
@@ -501,16 +501,13 @@ function decorateTable($block, features) {
 }
 
 async function fetchPricingSheet(sheet) {
-  const data = {};
   const tabs = ['header', 'plans', 'plan-options', 'table'];
   const names = ['header', 'plans', 'planOptions', 'features'];
-  await Promise.all(tabs.map(async (tab, i) => {
-    try {
-      data[names[i]] = await fetchPricingTab(sheet, tab);
-    } catch (e) {
-      // something went wrong
-    }
-  }));
+  const sheets = await fetchPricingTabs(sheet);
+  const data = {};
+  tabs.forEach((tab, i) => {
+    data[names[i]] = sheets[tab].data;
+  });
   return data;
 }
 

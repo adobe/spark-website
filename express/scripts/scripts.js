@@ -492,6 +492,7 @@ function decorateBlocks() {
   document.querySelectorAll('main div.section-wrapper > div > div').forEach(($block) => {
     const classes = Array.from($block.classList.values());
     let blockName = classes[0];
+    if (!blockName) return;
     const $section = $block.closest('.section-wrapper');
     if ($section) {
       $section.classList.add(`${blockName}-container`.replace(/--/g, '-'));
@@ -612,6 +613,78 @@ async function loadFonts() {
   document.body.classList.add('font-loaded');
 }
 
+function supportsWebp() {
+  return window.webpSupport;
+}
+
+// Google official webp detection
+function checkWebpFeature(callback) {
+  const webpSupport = sessionStorage.getItem('webpSupport');
+  if (!webpSupport) {
+    const kTestImages = 'UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
+    const img = new Image();
+    img.onload = () => {
+      const result = (img.width > 0) && (img.height > 0);
+      window.webpSupport = result;
+      sessionStorage.setItem('webpSupport', result);
+      callback();
+    };
+    img.onerror = () => {
+      sessionStorage.setItem('webpSupport', false);
+      window.webpSupport = false;
+      callback();
+    };
+    img.src = `data:image/webp;base64,${kTestImages}`;
+  } else {
+    window.webpSupport = (webpSupport === 'true');
+    callback();
+  }
+}
+
+export function getOptimizedImageURL(src) {
+  const url = new URL(src, window.location.href);
+  let result = src;
+  const { pathname, search } = url;
+  if (pathname.includes('media_')) {
+    const usp = new URLSearchParams(search);
+    usp.delete('auto');
+    if (!supportsWebp()) {
+      if (pathname.endsWith('.png')) {
+        usp.set('format', 'png');
+      } else if (pathname.endsWith('.gif')) {
+        usp.set('format', 'gif');
+      } else {
+        usp.set('format', 'pjpg');
+      }
+    } else {
+      usp.set('format', 'webply');
+    }
+    result = `${src.split('?')[0]}?${usp.toString()}`;
+  }
+  return (result);
+}
+
+function resetAttribute($elem, attrib) {
+  const src = $elem.getAttribute(attrib);
+  if (src) {
+    const oSrc = getOptimizedImageURL(src);
+    if (oSrc !== src) {
+      $elem.setAttribute(attrib, oSrc);
+    }
+  }
+}
+
+export function webpPolyfill(element) {
+  if (!supportsWebp()) {
+    element.querySelectorAll('img').forEach(($img) => {
+      resetAttribute($img, 'src');
+    });
+    element.querySelectorAll('picture source').forEach(($source) => {
+      resetAttribute($source, 'srcset');
+    });
+  }
+}
+
 function postLCP() {
   loadFonts();
   const martechUrl = '/express/scripts/martech.js';
@@ -641,7 +714,7 @@ async function fetchAuthorImage($image, author) {
     $div.innerHTML = main;
     const $img = $div.querySelector('img');
     const src = $img.src.replace('width=2000', 'width=200');
-    $image.src = src;
+    $image.src = getOptimizedImageURL(src);
   }
 }
 
@@ -931,78 +1004,6 @@ function splitSections() {
   });
 }
 
-function supportsWebp() {
-  return window.webpSupport;
-}
-
-// Google official webp detection
-function checkWebpFeature(callback) {
-  const webpSupport = sessionStorage.getItem('webpSupport');
-  if (!webpSupport) {
-    const kTestImages = 'UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
-    const img = new Image();
-    img.onload = () => {
-      const result = (img.width > 0) && (img.height > 0);
-      window.webpSupport = result;
-      sessionStorage.setItem('webpSupport', result);
-      callback();
-    };
-    img.onerror = () => {
-      sessionStorage.setItem('webpSupport', false);
-      window.webpSupport = false;
-      callback();
-    };
-    img.src = `data:image/webp;base64,${kTestImages}`;
-  } else {
-    window.webpSupport = (webpSupport === 'true');
-    callback();
-  }
-}
-
-export function getOptimizedImageURL(src) {
-  const url = new URL(src, window.location.href);
-  let result = src;
-  const { pathname, search } = url;
-  if (pathname.includes('media_')) {
-    const usp = new URLSearchParams(search);
-    usp.delete('auto');
-    if (!supportsWebp()) {
-      if (pathname.endsWith('.png')) {
-        usp.set('format', 'png');
-      } else if (pathname.endsWith('.gif')) {
-        usp.set('format', 'gif');
-      } else {
-        usp.set('format', 'pjpg');
-      }
-    } else {
-      usp.set('format', 'webply');
-    }
-    result = `${src.split('?')[0]}?${usp.toString()}`;
-  }
-  return (result);
-}
-
-function resetAttribute($elem, attrib) {
-  const src = $elem.getAttribute(attrib);
-  if (src) {
-    const oSrc = getOptimizedImageURL(src);
-    if (oSrc !== src) {
-      $elem.setAttribute(attrib, oSrc);
-    }
-  }
-}
-
-export function webpPolyfill(element) {
-  if (!supportsWebp()) {
-    element.querySelectorAll('img').forEach(($img) => {
-      resetAttribute($img, 'src');
-    });
-    element.querySelectorAll('picture source').forEach(($source) => {
-      resetAttribute($source, 'srcset');
-    });
-  }
-}
-
 function setTheme() {
   const theme = getMeta('theme');
   if (theme) {
@@ -1096,13 +1097,6 @@ export function getHelixEnv() {
   return env;
 }
 
-/* this is a workaround for a preview URL sidekick mismatch */
-function tempRedirect() {
-  if (window.location && window.location.hostname && window.location.hostname.startsWith('main--')) {
-    window.location.href = window.location.href.replace('main--', '');
-  }
-}
-
 function displayOldLinkWarning() {
   if (window.location.hostname.includes('localhost') || window.location.hostname.includes('.hlx.page')) {
     document.querySelectorAll('main a[href^="https://spark.adobe.com/"]').forEach(($a) => {
@@ -1144,7 +1138,8 @@ function displayEnv() {
     /* setup based on referrer */
     if (document.referrer) {
       const url = new URL(document.referrer);
-      if (url.hostname.endsWith('.adobeprojectm.com')) {
+      const sparkEnvs = ['spark-stage.adobe.com', 'spark-qa.adobe.com'];
+      if (url.hostname.endsWith('.adobeprojectm.com') || sparkEnvs.includes(url.hostname)) {
         setHelixEnv('stage', { spark: url.host });
       }
       if (window.location.hostname !== url.hostname) {
@@ -1187,14 +1182,6 @@ async function decoratePage() {
   displayEnv();
   displayOldLinkWarning();
   document.body.classList.add('appear');
-
-  // this is a temporary fix for a preview URL mismatch
-  try {
-    tempRedirect();
-  } catch (e) {
-    // something went wrong
-    console.log(`temp redirect failed ${e.message}`);
-  }
 }
 
 window.spark = {};
