@@ -59,8 +59,6 @@
         if (Array.isArray(window.hlx.dependencies)) {
           urls = urls.concat(window.hlx.dependencies);
         }
-        // hlx2 publishing
-        await Promise.all(urls.map((url) => sk.publish(url)));
         // hlx3 publishing
         await Promise.all(urls.map((url) => hlx3Publish(config, location, url)));
 
