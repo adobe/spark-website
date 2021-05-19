@@ -90,7 +90,7 @@
   sk.add({
     override: true,
     id: 'edit',
-    condition: (sidekick) => sidekick.isHelix(),
+    condition: (sidekick) => sidekick.isEditor() || sidekick.isHelix(),
     button: {
       action: (evt) => {
         const { config, location } = sk;
@@ -116,7 +116,7 @@
   sk.add({
     override: true,
     id: 'preview',
-    condition: (sidekick) => sidekick.isEditor() || sidekick.isOuter(),
+    condition: (sidekick) => sidekick.isEditor() || sidekick.isHelix(),
     button: {
       action: (evt) => {
         const { config, location } = sk;
