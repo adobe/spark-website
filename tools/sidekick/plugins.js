@@ -109,6 +109,7 @@
           window.location.href = url;
         }
       },
+      isPressed: () => sk.isEditor(),
     },
   });
 
@@ -133,6 +134,7 @@
           window.location.href = url;
         }
       },
+      isPressed: () => sk.isInner(),
     },
   });
 
