@@ -86,58 +86,6 @@
     },
   });
 
-  // override edit button
-  sk.add({
-    override: true,
-    id: 'edit',
-    condition: (sidekick) => sidekick.isEditor() || sidekick.isHelix(),
-    button: {
-      action: (evt) => {
-        const { config, location } = sk;
-        const path = location.pathname;
-        const file = path.split('/').pop() || 'index'; // use 'index' if no filename
-        let editPath;
-        if (file.endsWith('.html')) {
-          editPath = path.replace(/\.html$/, '.lnk');
-        } else if (!file.includes('.')) {
-          editPath = `${path.endsWith(file) ? path : `${path}${file}`}.lnk`;
-        }
-        const url = getAdminUrl(config, editPath);
-        if (evt.metaKey || evt.which === 2) {
-          window.open(url);
-        } else {
-          window.location.href = url;
-        }
-      },
-      isPressed: () => sk.isEditor(),
-    },
-  });
-
-  // override preview button
-  sk.add({
-    override: true,
-    id: 'preview',
-    condition: (sidekick) => sidekick.isEditor() || sidekick.isHelix(),
-    button: {
-      action: (evt) => {
-        const { config, location } = sk;
-        let url;
-        if (sk.isEditor()) {
-          url = getAdminUrl(config, `/hlx_${btoa(location.href).replace(/\+/, '-').replace(/\//, '_')}.lnk`);
-        } else {
-          const host = location.host === config.innerHost ? config.host : config.innerHost;
-          url = `https://${host}${location.pathname}`;
-        }
-        if (evt.metaKey || evt.which === 2) {
-          window.open(url);
-        } else {
-          window.location.href = url;
-        }
-      },
-      isPressed: () => sk.isInner(),
-    },
-  });
-
   // METADATA --------------------------------------------------------------------
 
   sk.add({
