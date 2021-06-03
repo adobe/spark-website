@@ -61,7 +61,7 @@ export default function decorate($block) {
       }
       // this probably needs to be tighter and possibly earlier
       const $a = $cell.querySelector('a');
-      if ($pics && $a) {
+      if ($pics[0] && $a) {
         if ($a.textContent.startsWith('https://')) {
           linkImage($cell);
         }
