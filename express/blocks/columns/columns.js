@@ -56,7 +56,7 @@ export default function decorate($block) {
       const $pics = $cell.querySelectorAll(':scope picture');
       if ($pics.length === 1 && $pics[0].parentElement.tagName === 'P') {
         // unwrap single picture if wrapped in p tag, see https://github.com/adobe/helix-word2md/issues/662
-        const $parent = $pics[0].closes('div');
+        const $parent = $pics[0].closest('div');
         $parent.append($pics[0]);
       }
       // this probably needs to be tighter and possibly earlier
