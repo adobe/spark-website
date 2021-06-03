@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* global window fetch btoa */
+/* global window fetch */
 
 // This file contains the spark-specific plugins for the sidekick.
 (() => {
@@ -17,10 +17,6 @@
   if (typeof sk !== 'object') return;
 
   // HLX3 --------------------------------------------------------------------------
-
-  function getAdminUrl({ owner, repo, ref }, path) {
-    return `https://admin.hlx3.page/${owner}/${repo}/${ref}${path}`;
-  }
 
   async function hlx3Publish(config, location, path) {
     if (!config.host
