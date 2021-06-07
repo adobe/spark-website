@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Trigger
         id: trigger
-        uses: adobe-rnd/github-purge-cache-action@master
+        uses: adobe-rnd/github-purge-cache-action@hlx3
         with:
           helix-url: https://spark-website--adobe.hlx.live/
           repo-token: ${{ secrets.GITHUB_TOKEN }}
