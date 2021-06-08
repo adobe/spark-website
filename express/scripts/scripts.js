@@ -306,13 +306,13 @@ function getGnavPlaceholder(nav) {
     <div id="header-placeholder" class="placeholder">
     <div class="mobile">
       <div class="hamburger"></div>
-      <div class="logo"><img src="/express/gnav-placeholder/adobe-logo.svg"></div>
+      <div class="logo"><img loading="lazy" src="/express/gnav-placeholder/adobe-logo.svg"></div>
       <div class="signin">${nav.signIn}</div>
     </div>
     <div class="desktop">
       <div class="top">
         <div class="left">
-          <div class="logo"><img src="/express/gnav-placeholder/adobe-logo.svg"><span class="adobe">Adobe</span></div>
+          <div class="logo"><img loading="lazy" src="/express/gnav-placeholder/adobe-logo.svg"><span class="adobe">Adobe</span></div>
           <div class="section">`;
 
   nav.top.forEach((e) => {
@@ -685,19 +685,29 @@ export function webpPolyfill(element) {
   }
 }
 
+function addFavIcon() {
+  const $link = createTag('link', {
+    rel: 'icon',
+    type: 'image/svg+xml',
+    href: '/express/icons/spark.svg',
+  });
+  document.getElementsByTagName('head')[0].appendChild($link);
+}
+
 function postLCP() {
   loadFonts();
   const martechUrl = '/express/scripts/martech.js';
   loadCSS('/express/styles/lazy-styles.css');
   loadBlocks();
   resolveFragments();
+  addFavIcon();
 
   const usp = new URLSearchParams(window.location.search);
   const martech = usp.get('martech');
 
   // loadLazyFooter();
   if (!(martech === 'off' || document.querySelector(`head script[src="${martechUrl}"]`))) {
-    let ms = 2500;
+    let ms = 3000;
     const delay = usp.get('delay');
     if (delay) ms = +delay;
     setTimeout(() => {
@@ -833,7 +843,10 @@ function decorateButtons() {
 
 async function checkTesting(url) {
   const pathname = new URL(url).pathname.split('.')[0];
-  const resp = await fetch('/express/testing.json');
+  const resp = await fetch('/express/testing.json', {
+    credentials: 'include',
+    mode: 'no-cors',
+  });
   if (resp.ok) {
     const json = await resp.json();
     const matches = json.data.filter((test) => {
