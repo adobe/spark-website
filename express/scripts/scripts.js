@@ -691,7 +691,12 @@ function addFavIcon() {
     type: 'image/svg+xml',
     href: '/express/icons/spark.svg',
   });
-  document.getElementsByTagName('head')[0].appendChild($link);
+  const $existingLink = document.querySelector('head link[rel="icon"]');
+  if ($existingLink) {
+    $existingLink.parentElement.replaceChild($link, $existingLink);
+  } else {
+    document.getElementsByTagName('head')[0].appendChild($link);
+  }
 }
 
 function postLCP() {
