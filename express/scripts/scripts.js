@@ -1179,10 +1179,6 @@ function displayEnv() {
 async function decoratePage() {
   setTemplate();
   setTheme();
-  await decorateTesting();
-  if (sessionStorage.getItem('helix-font') === 'loaded') {
-    loadFonts();
-  }
   splitSections();
   wrapSections('main > div');
   decorateHeaderAndFooter();
@@ -1199,7 +1195,12 @@ async function decoratePage() {
   setLCPTrigger();
   displayEnv();
   displayOldLinkWarning();
-  document.body.classList.add('appear');
+  const $main = document.querySelector('main');
+  await decorateTesting();
+  if (sessionStorage.getItem('helix-font') === 'loaded') {
+    loadFonts();
+  }
+  $main.classList.add('appear');
 }
 
 window.spark = {};
