@@ -692,6 +692,7 @@ function addFavIcon() {
     href: '/express/icons/spark.svg',
   });
   const $existingLink = document.querySelector('head link[rel="icon"]');
+  console.log($existingLink, $link);
   if ($existingLink) {
     $existingLink.parentElement.replaceChild($link, $existingLink);
   } else {
@@ -953,7 +954,6 @@ function setTemplate() {
 
 function setLCPTrigger() {
   const $lcpCandidate = document.querySelector('main > div:first-of-type img');
-  console.log($lcpCandidate);
   if ($lcpCandidate) {
     if ($lcpCandidate.complete) {
       postLCP();
