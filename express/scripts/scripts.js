@@ -590,7 +590,6 @@ export function readBlockConfig($block) {
   return config;
 }
 
-
 function supportsWebp() {
   return window.webpSupport;
 }
