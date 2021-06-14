@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 /* global window, navigator, document, fetch, performance, PerformanceObserver,
-          FontFace, sessionStorage, Image */
+          Image */
 /* eslint-disable no-console */
 
 export function toClassName(name) {
@@ -589,6 +589,7 @@ export function readBlockConfig($block) {
   });
   return config;
 }
+
 
 function supportsWebp() {
   return window.webpSupport;
