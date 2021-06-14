@@ -590,29 +590,6 @@ export function readBlockConfig($block) {
   return config;
 }
 
-async function loadFont(name, url, weight) {
-  const font = new FontFace(name, url, { weight });
-  const fontLoaded = await font.load();
-  return (fontLoaded);
-}
-
-async function loadFonts() {
-  try {
-    /* todo promise.All */
-    const f900 = await loadFont('adobe-clean', 'url("https://use.typekit.net/af/b0c5f5/00000000000000003b9b3f85/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3")', 400);
-    const f400 = await loadFont('adobe-clean', 'url("https://use.typekit.net/af/ad2a79/00000000000000003b9b3f8c/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n9&v=3")', 900);
-    const f700 = await loadFont('adobe-clean', 'url("https://use.typekit.net/af/97fbd1/00000000000000003b9b3f88/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3")', 700);
-    document.fonts.add(f900);
-    document.fonts.add(f400);
-    document.fonts.add(f700);
-    sessionStorage.setItem('helix-fonts', 'loaded');
-  } catch (err) {
-    /* something went wrong */
-    console.log(err);
-  }
-  document.body.classList.add('font-loaded');
-}
-
 function supportsWebp() {
   return window.webpSupport;
 }
@@ -700,7 +677,6 @@ function addFavIcon() {
 }
 
 function postLCP() {
-  loadFonts();
   const martechUrl = '/express/scripts/martech.js';
   loadCSS('/express/styles/lazy-styles.css');
   loadBlocks();
@@ -1197,9 +1173,6 @@ async function decoratePage() {
   displayOldLinkWarning();
   const $main = document.querySelector('main');
   await decorateTesting();
-  if (sessionStorage.getItem('helix-font') === 'loaded') {
-    loadFonts();
-  }
   $main.classList.add('appear');
 }
 
