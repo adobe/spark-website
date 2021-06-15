@@ -1040,6 +1040,14 @@ function decorateLinkedPictures() {
   });
 }
 
+
+function decorateEmbedLinks() {
+  document.querySelectorAll('p main a').forEach(($a) => {
+    console.log('debug');
+  });
+}
+
+
 function decorateSocialIcons() {
   document.querySelectorAll('main a').forEach(($a) => {
     if ($a.href === $a.textContent) {
@@ -1047,7 +1055,7 @@ function decorateSocialIcons() {
       if ($a.href.startsWith('https://www.instagram.com')) {
         icon = 'instagram';
       }
-      if ($a.href.startsWith('https://twitter.com')) {
+      if ($a.href === 'https://twitter.com') {
         icon = 'twitter';
       }
       if ($a.href.startsWith('https://www.pinterest.')) {
@@ -1056,10 +1064,10 @@ function decorateSocialIcons() {
       if ($a.href.startsWith('https://www.facebook.')) {
         icon = 'facebook';
       }
-      if ($a.href.startsWith('https://www.linkedin.com')) {
+      if ($a.href === 'https://www.linkedin.com') {
         icon = 'linkedin';
       }
-      if ($a.href.startsWith('https://www.youtube.com')) {
+      if ($a.href === 'https://www.youtube.com') {
         icon = 'youtube';
       }
       const $parent = $a.parentElement;
@@ -1191,6 +1199,7 @@ async function decoratePage() {
   decorateBlocks();
   decorateDoMoreEmbed();
   decorateLinkedPictures();
+  decorateEmbedLinks();
   decorateSocialIcons();
   setLCPTrigger();
   displayEnv();
