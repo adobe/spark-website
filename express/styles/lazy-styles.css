@@ -71,6 +71,15 @@ preloaded in js
   .tk-adobe-clean { font-family: "adobe-clean",sans-serif; }
   .tk-adobe-clean-serif { font-family: "adobe-clean-serif",sans-serif; }
 
+
+/* delayed loading */
+header {
+  background-image: url(/express/icons/adobe-spark.png);
+  background-repeat: no-repeat;
+  background-size: auto 42px;
+  background-position: bottom 24px center;
+}
+
 /* below the fold */
 
 

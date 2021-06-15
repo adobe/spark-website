@@ -4,10 +4,13 @@ body {
     color: #232323;
     margin: 0;
     padding: 0;
-    display: none;
 }
 
-body.appear {
+main {
+  display: none;
+}
+
+main.appear {
     display: block;
 }
 
@@ -17,10 +20,6 @@ header {
     box-sizing: border-box;
     border-bottom: 1px solid #EAEAEA;
     height: 153px;
-    background-image: url(/express/icons/adobe-spark.png);
-    background-repeat: no-repeat;
-    background-size: auto 42px;
-    background-position: bottom 24px center;
     position: relative;
     background-color: white;
 }
@@ -316,14 +315,8 @@ main .hero.hero-noimage a:any-link{
 }
 
 main h1 {
-  opacity: 0;
   transition: opacity 0.2s;
 }
-
-.font-loaded main h1 {
-  opacity: 1;
-}
-
 
 main .hero h1 {
     font-size: 45px;
@@ -730,3 +723,22 @@ main .page-list-container, main .pricing, main .hero-animation {
   transition: opacity 100ms;
 }
 
+main .show-section-only-desktop-container {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  main .show-section-only-desktop-container {
+      display: block;
+  }
+}
+
+main .show-section-only-mobile-container {
+  display: block;
+}
+
+@media (min-width: 600px) {
+  main .show-section-only-mobile-container {
+      display: none;
+  }
+}
