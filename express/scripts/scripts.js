@@ -1042,7 +1042,7 @@ function decorateLinkedPictures() {
 
 
 function decorateEmbedLinks() {
-  document.querySelectorAll('p main a').forEach(($a) => {
+  document.querySelectorAll('main p a').forEach(($a) => {
     console.log('debug');
   });
 }
@@ -1052,7 +1052,7 @@ function decorateSocialIcons() {
   document.querySelectorAll('main a').forEach(($a) => {
     if ($a.href === $a.textContent) {
       let icon = '';
-      if ($a.href.startsWith('https://www.instagram.com')) {
+      if ($a.href === 'https://www.instagram.com') {
         icon = 'instagram';
       }
       if ($a.href === 'https://twitter.com') {
