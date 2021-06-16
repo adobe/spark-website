@@ -1135,6 +1135,7 @@ const EMBEDS_CONFIG = {
 
 function decorateEmbedLinks() {
   document.querySelectorAll('main p a').forEach(($a) => {
+    const html = $a.outerHTML;
     console.log('debug');
   });
 }
