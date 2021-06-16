@@ -1040,10 +1040,6 @@ function decorateLinkedPictures() {
   });
 }
 
-import {
-  loadScript,
-} from '../../scripts/scripts.js';
-
 // 'open.spotify.com' returns 'spotify'
 function getServer(url) {
   const l = url.hostname.lastIndexOf('.');
