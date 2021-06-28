@@ -77,6 +77,7 @@ main .columns .social.icon {
 
   main .section-wrapper div.columns > div > div * {
     text-align: left;
+    height: 100%
   }
 
   main .section-wrapper div.columns.centered > div > div * {
