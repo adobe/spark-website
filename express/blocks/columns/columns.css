@@ -16,7 +16,6 @@ main .columns.width-3-columns h3 {
 main .columns > div {
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 main .columns.centered > div > div {
@@ -64,11 +63,13 @@ main .columns .social.icon {
 
 @media (min-width:900px) {
   main .columns > div {
+    display: flex;
     flex-direction: row;
     text-align: left;
   }
 
   main .section-wrapper div.columns > div > div {
+    flex-direction:column;
     width: 50%;
     padding: 10px 24px;
   }
