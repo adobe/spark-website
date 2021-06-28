@@ -53,7 +53,7 @@ main .columns > div span.num + * {
 }
 
 main .columns.center > div {
-  align-items: center;
+  /*align-items: center;*/
 }
 
 main .columns .social.icon {
@@ -64,6 +64,7 @@ main .columns .social.icon {
 
 @media (min-width:900px) {
   main .columns > div {
+    flex-direction: row;
     text-align: left;
   }
 
