@@ -80,10 +80,6 @@ main .columns .social.icon {
     text-align: left;
   }
 
-  img {
-    height: 100%;
-  }
-
   main .section-wrapper div.columns.centered > div > div * {
     text-align: center;
   }
