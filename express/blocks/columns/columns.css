@@ -71,6 +71,7 @@ main .columns .social.icon {
   main .section-wrapper div.columns > div > div {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     width: 50%;
     padding: 10px 24px;
   }
@@ -80,7 +81,7 @@ main .columns .social.icon {
   }
 
   img {
-    height: auto;
+    height: 100%;
   }
 
   main .section-wrapper div.columns.centered > div > div * {
