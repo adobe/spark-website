@@ -79,8 +79,8 @@ main .columns .social.icon {
     text-align: left;
   }
 
-  picture {
-    flex-grow: 1 1 0px;
+  main .columns picture {
+    margin: auto;
   }
 
   main .section-wrapper div.columns.centered > div > div * {
