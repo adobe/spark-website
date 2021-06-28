@@ -16,7 +16,6 @@ main .columns.width-3-columns h3 {
 main .columns > div {
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 main .columns.centered > div > div {
@@ -53,7 +52,7 @@ main .columns > div span.num + * {
 }
 
 main .columns.center > div {
-  /*align-items: center;*/
+  align-items: center;
 }
 
 main .columns .social.icon {
