@@ -61,6 +61,18 @@ main .columns .social.icon {
   margin-right: 24px;
 }
 
+main .section-wrapper div.columns > div > div picture {
+  order: 1;
+}
+
+main .section-wrapper div.columns > div > div h3 {
+  order: 2;
+}
+
+main .section-wrapper div.columns > div > div p {
+  order: 3;
+}
+
 @media (min-width:900px) {
   main .columns > div {
     flex-direction: row;
