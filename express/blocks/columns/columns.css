@@ -16,7 +16,7 @@ main .columns.width-3-columns h3 {
 main .columns > div {
     display: flex;
     flex-direction: column;
-    align-items: baseline;
+    align-items: center;
 }
 
 main .columns.centered > div > div {
@@ -62,24 +62,11 @@ main .columns .social.icon {
   margin-right: 24px;
 }
 
-main .section-wrapper div.columns > div > div picture {
-  order: 1;
-}
-
-main .section-wrapper div.columns > div > div h3 {
-  order: 2;
-  margin: 32px 0;
-}
-
-main .section-wrapper div.columns > div > div p {
-  order: 3;
-  margin: 0;
-}
-
 @media (min-width:900px) {
   main .columns > div {
     flex-direction: row;
     text-align: left;
+    align-items: baseline;
   }
 
   main .section-wrapper div.columns > div > div {
