@@ -66,9 +66,12 @@ main .columns .social.icon {
   main .columns > div {
     flex-direction: row;
     text-align: left;
+    align-items: baseline;
   }
 
   main .section-wrapper div.columns > div > div {
+    display: flex;
+    flex-direction: column;
     width: 50%;
     padding: 10px 24px;
   }
