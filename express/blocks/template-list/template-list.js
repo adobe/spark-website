@@ -148,8 +148,10 @@ async function decorateTemplateList($block) {
     const $link = $tmplt.querySelector(':scope > div:last-of-type > a');
     if ($link) {
       const templateSearchTag = getMeta('short-title');
+      const searchQueryParam = templateSearchTag && templateSearchTag.length > 0 ? `?search=${templateSearchTag}` : '';
+
       const $a = createTag('a', {
-        href: `${$link.href}?search=${templateSearchTag}` || '#',
+        href: `${$link.href}${searchQueryParam}` || '#',
       });
       $a.append(...$tmplt.childNodes);
       $tmplt.remove();
