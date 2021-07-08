@@ -192,6 +192,9 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   } else if (pathname.includes('/feature/image/remove-background')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:removeBackground');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
+  } else if (pathname.includes('/feature/image/transparent-background')) {
+    digitalData._set('spark.eventData.contextualData1', 'quickActionType:removeBackground');
+    digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
   } else if (pathname.includes('/feature/image/jpg-to-png')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToPNG');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
@@ -329,6 +332,7 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
       }
 
     // quick actions clicks
+    } else if ($a.href.includes('spark.adobe.com/tools')) {
     } else if ($a.href.match(/spark\.adobe\.com\/[a-zA-Z-]*\/?tools/g)) {
       adobeEventName = appendLinkText(adobeEventName, $a);
       sparkEventName = 'quickAction:ctaPressed';
