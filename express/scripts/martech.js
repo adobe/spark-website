@@ -332,11 +332,9 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
       }
 
     // quick actions clicks
-    } else if ($a.href.includes('spark.adobe.com/tools')) {
     } else if ($a.href.match(/spark\.adobe\.com\/[a-zA-Z-]*\/?tools/g)) {
       adobeEventName = appendLinkText(adobeEventName, $a);
       sparkEventName = 'quickAction:ctaPressed';
-
     // Default clicks
     } else {
       adobeEventName = appendLinkText(adobeEventName, $a);
