@@ -48,5 +48,5 @@
   });
 
   // ensure correct outer host
-  cfg.outerHost = 'express-website--adobe.hlx.live;
+  cfg.outerHost = 'express-website--adobe.hlx.live';
 })();
