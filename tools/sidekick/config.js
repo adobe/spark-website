@@ -13,8 +13,9 @@
 
 // This file contains the project-specific configuration for the sidekick.
 (() => {
-  const { config: cfg } = window.hlx.initSidekick({
+  window.hlx.initSidekick({
     project: 'Spark',
+    outerHost: 'spark-website--adobe.hlx.live',
     host: 'www.adobe.com',
     byocdn: true,
     hlx3: true,
@@ -46,7 +47,4 @@
       },
     ],
   });
-
-  // ensure correct outer host
-  cfg.outerHost = 'express-website--adobe.hlx.live';
 })();
