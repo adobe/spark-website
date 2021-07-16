@@ -13,3 +13,5 @@ Outer CDN:
 1. Go to the `spark-website` directory: `cd spark-website`
 1. Start Helix Simulator: `hlx up` (opens your browser at `http://localhost:3000`)
 1. Open the `spark-website` directory in your favorite IDE and start coding :)
+
+
