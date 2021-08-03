@@ -213,25 +213,25 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   } else if (pathname.includes('/feature/video/video-to-gif')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToGIF');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
-  } else if (pathname.includes('/feature/video/change-speed')) {
+  } else if (pathname.endsWith('/feature/video/change-speed')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:changeVideoSpeed');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
-  } else if (pathname.includes('/feature/video/merge')) {
+  } else if (pathname.endsWith('/feature/video/merge')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:mergeVideo');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
-  } else if (pathname.includes('/feature/video/convert/mp4-to-gif')) {
+  } else if (pathname.endsWith('/feature/video/convert/mp4-to-gif')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToGIF');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
-  } else if (pathname.includes('/feature/video/convert/mp4')) {
+  } else if (pathname.endsWith('/feature/video/convert/mp4')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToMP4');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
-  } else if (pathname.includes('/feature/video/convert/gif-to-mp4')) {
+  } else if (pathname.endsWith('/feature/video/convert/gif-to-mp4')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToMP4');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
-  } else if (pathname.includes('/feature/video/convert/mov-to-mp4')) {
+  } else if (pathname.endsWith('/feature/video/convert/mov-to-mp4')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToMP4');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
-  } else if (pathname.includes('/feature/video/convert/wmv-to-mp4')) {
+  } else if (pathname.endsWith('/feature/video/convert/wmv-to-mp4')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToMP4');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
   }
