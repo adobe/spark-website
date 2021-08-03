@@ -222,6 +222,18 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   } else if (pathname.includes('/feature/video/convert/mp4-to-gif')) {
     digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToGIF');
     digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
+  } else if (pathname.includes('/feature/video/convert/mp4')) {
+    digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToMP4');
+    digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
+  } else if (pathname.includes('/feature/video/convert/gif-to-mp4')) {
+    digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToMP4');
+    digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
+  } else if (pathname.includes('/feature/video/convert/mov-to-mp4')) {
+    digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToMP4');
+    digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
+  } else if (pathname.includes('/feature/video/convert/wmv-to-mp4')) {
+    digitalData._set('spark.eventData.contextualData1', 'quickActionType:convertToMP4');
+    digitalData._set('spark.eventData.contextualData2', 'actionLocation:seo');
   }
 
   //------------------------------------------------------------------------------------
