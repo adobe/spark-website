@@ -59,7 +59,7 @@ indices:
     exclude:
       - '**/Document.*'
       - 'express/learn/blog/**'
-    target: https://adobe.sharepoint.com/sites/SparkHelix/Shared%20Documents/express/query-index.xlsx
+    target: https://adobe.sharepoint.com/sites/SparkHelix/Shared%20Documents/website/express/query-index.xlsx
     properties:
       title:
         select: head > meta[property="og:title"]
@@ -90,7 +90,7 @@ indices:
     <<: *default
     include:
       - 'de/express/**'
-    target: https://adobe.sharepoint.com/sites/SparkHelix/Shared%20Documents/de/express/query-index.xlsx
+    target: https://adobe.sharepoint.com/sites/SparkHelix/Shared%20Documents/website/de/express/query-index.xlsx
 
   spain:
     <<: *default
