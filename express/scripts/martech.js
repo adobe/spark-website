@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* global window document navigator digitalData _satellite fetch */
+/* global window webVitals document navigator digitalData _satellite fetch */
 
 import {
   loadScript,
@@ -516,3 +516,51 @@ loadScript('https://www.adobe.com/etc.clientlibs/globalnav/clientlibs/base/feds.
 }).id = 'feds-script';
 
 loadScript('https://static.adobelogin.com/imslib/imslib.min.js');
+
+/* Core Web Vitals */
+const usp = new URLSearchParams(window.location.search);
+const cwv = usp.get('cwv');
+
+// with parameter, weight is 1. Defaults to 100.
+const weight = (cwv === 'on') ? 1 : 100;
+
+window.hlx = window.hlx || {};
+
+// eslint-disable-next-line no-bitwise
+const hashCode = (s) => s.split('').reduce((a, b) => (((a << 5) - a) + b.charCodeAt(0)) | 0, 0);
+const id = `${hashCode(window.location.href)}-${new Date().getTime()}-${Math.random().toString(16).substr(2, 14)}`;
+
+function store(data) {
+  const body = JSON.stringify(data);
+  const url = `https://rum.hlx3.page/.rum/${weight}`;
+
+  // console.log('storing', body);
+
+  // Use `navigator.sendBeacon()` if available, falling back to `fetch()`.
+  // eslint-disable-next-line no-unused-expressions
+  (navigator.sendBeacon && navigator.sendBeacon(url, body))
+  || fetch(url, { body, method: 'POST', keepalive: true });
+}
+
+function storeCWV(measurement) {
+  const rum = { cwv: { }, weight, id };
+  rum.cwv[measurement.name] = measurement.value;
+
+  store(rum);
+}
+
+if (Math.random() * weight < 1) {
+  // store a page view
+  store({ weight, id });
+
+  const script = document.createElement('script');
+  script.src = 'https://unpkg.com/web-vitals';
+  script.onload = () => {
+    // When loading `web-vitals` using a classic script, all the public
+    // methods can be found on the `webVitals` global namespace.
+    webVitals.getCLS(storeCWV);
+    webVitals.getFID(storeCWV);
+    webVitals.getLCP(storeCWV);
+  };
+  document.head.appendChild(script);
+}
