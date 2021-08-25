@@ -532,7 +532,7 @@ const id = `${hashCode(window.location.href)}-${new Date().getTime()}-${Math.ran
 
 function store(data) {
   const body = JSON.stringify(data);
-  const url = `/.rum/${weight}`;
+  const url = `https://rum.hlx3.page/.rum/${weight}`;
 
   // console.log('storing', body);
 
