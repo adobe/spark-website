@@ -545,7 +545,7 @@ function store(data) {
 function storeCWV(measurement) {
   const rum = { cwv: { }, weight, id };
   rum.cwv[measurement.name] = measurement.value;
-
+  rum.referer = window.location.href;
   store(rum);
 }
 
