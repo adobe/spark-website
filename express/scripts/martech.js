@@ -551,7 +551,7 @@ function storeCWV(measurement) {
 
 if (Math.random() * weight < 1) {
   // store a page view
-  store({ weight, id });
+  store({ weight, id, referer: window.location.href });
 
   const script = document.createElement('script');
   script.src = 'https://unpkg.com/web-vitals';
