@@ -543,13 +543,13 @@ function store(data) {
 function storeCWV(measurement) {
   const rum = { cwv: { }, weight, id };
   rum.cwv[measurement.name] = measurement.value;
-
+  rum.referer = window.location.href;
   store(rum);
 }
 
 if (Math.random() * weight < 1) {
   // store a page view
-  store({ weight, id });
+  store({ weight, id, referer: window.location.href });
 
   const script = document.createElement('script');
   script.src = 'https://unpkg.com/web-vitals';
