@@ -407,6 +407,11 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
 
   decorateAnalyticsEvents();
 
+  const main = document.querySelector('main');
+  if (main) {
+    main.classList.add('appear');
+  }
+
   const { weight, id, random } = window.hlx.rum;
 
   if (random && (random * weight < 1)) {

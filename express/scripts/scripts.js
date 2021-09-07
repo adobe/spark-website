@@ -1200,7 +1200,7 @@ async function decoratePage() {
   if (sessionStorage.getItem('helix-font') === 'loaded') {
     loadFonts();
   }
-  $main.classList.add('appear');
+  if (window.spark.martech !== 'rush') $main.classList.add('appear');
 }
 
 window.spark = {};
