@@ -56,6 +56,10 @@ main .columns.center > div {
   align-items: center;
 }
 
+main .columns .brand.icon {
+  display: none;
+}
+
 main .columns .social.icon {
   width: 32px;
   height: 32px;
@@ -66,6 +70,12 @@ main .columns .social.icon {
   main .columns > div {
     flex-direction: row;
     text-align: left;
+  }
+
+  body.no-brand-header main .columns .brand.icon {
+    display: unset;
+    height: 32px;
+    width: max-content;
   }
 
   main .section-wrapper div.columns > div > div {
@@ -79,6 +89,7 @@ main .columns .social.icon {
     text-align: left;
   }
 
+  main .section-wrapper div.columns.center > div > div *,
   main .section-wrapper div.columns.centered > div > div * {
     text-align: center;
   }
@@ -87,5 +98,26 @@ main .columns .social.icon {
     font-size: 22px;
     line-height: 29px;
     display: block;
+  }
+}
+
+@media (min-width: 1200px) {
+  main .columns.fullsize .hero-animation-overlay {
+    position: relative;
+    min-height: 610px;
+  }
+
+  main .columns.fullsize .hero-animation-overlay > p {
+    margin: 0;
+  }
+
+  main .columns.fullsize .hero-animation-overlay video {
+    position: absolute;
+    left: 0;
+    max-width: max-content;
+  }
+
+  main .columns.fullsize + h2 {
+    margin-top: 0;
   }
 }
