@@ -1176,6 +1176,26 @@ function displayEnv() {
   }
 }
 
+function unhideBody(id) {
+  try {
+    document.head.removeChild(document.getElementById(id));
+  } catch (e) {
+    // nothing
+  }
+}
+
+function hideBody(id) {
+  const style = document.createElement('style');
+  style.id = id;
+  style.innerHTML = 'body{opacity:0.01 !important}';
+
+  try {
+    document.head.appendChild(style);
+  } catch (e) {
+    // nothing
+  }
+}
+
 async function decoratePage() {
   setTemplate();
   setTheme();
@@ -1195,12 +1215,20 @@ async function decoratePage() {
   setLCPTrigger();
   displayEnv();
   displayOldLinkWarning();
+
+  const bodyHideStyleId = 'at-body-style';
+  hideBody(bodyHideStyleId);
   const $main = document.querySelector('main');
   await decorateTesting();
   if (sessionStorage.getItem('helix-font') === 'loaded') {
     loadFonts();
   }
-  if (window.spark.martech !== 'rush') $main.classList.add('appear');
+
+  $main.classList.add('appear');
+
+  if (window.spark.martech !== 'rush') {
+    unhideBody(bodyHideStyleId);
+  }
 }
 
 window.spark = {};

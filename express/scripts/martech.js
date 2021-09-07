@@ -65,7 +65,7 @@ w.marketingtech = {
 };
 
 w.targetGlobalSettings = w.targetGlobalSettings || {};
-w.targetGlobalSettings.bodyHidingEnabled = false; // (w.spark.martech === 'rush');
+w.targetGlobalSettings.bodyHidingEnabled = (w.spark.martech === 'rush');
 
 loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   /* eslint-disable no-underscore-dangle */
@@ -406,11 +406,6 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   }
 
   decorateAnalyticsEvents();
-
-  const main = document.querySelector('main');
-  if (main) {
-    main.classList.add('appear');
-  }
 
   const { weight, id, random } = window.hlx.rum;
 
