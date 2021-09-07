@@ -84,7 +84,6 @@ export default function decorate($block) {
           $a.classList.replace('accent', 'primary');
         }
       }
-      $cell.classList.add('column');
       $cell.querySelectorAll(':scope p:empty').forEach(($p) => $p.remove());
     });
   });

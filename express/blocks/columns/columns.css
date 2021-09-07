@@ -102,17 +102,16 @@ main .columns .social.icon {
 }
 
 @media (min-width: 1200px) {
-  main .columns.fullsize .column.hero-animation-overlay {
+  main .columns.fullsize .hero-animation-overlay {
     position: relative;
     min-height: 610px;
   }
 
-  main .columns.fullsize .column.columns-picture > p,
-  main .columns.fullsize .column.hero-animation-overlay > p {
+  main .columns.fullsize .hero-animation-overlay > p {
     margin: 0;
   }
 
-  main .columns.fullsize .column video {
+  main .columns.fullsize .hero-animation-overlay video {
     position: absolute;
     left: 0;
     max-width: max-content;
