@@ -323,7 +323,7 @@ a.button.small:any-link {
 }
 
 a.button.primary:any-link {
-  background-color: var(--color-black);
+  background-color: var(--color-info-accent);
 }
 
 a.button.secondary:any-link {
