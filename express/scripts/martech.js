@@ -408,8 +408,6 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
   decorateAnalyticsEvents();
 
   const { weight, id, random } = window.hlx.rum;
-  const generation = 'instrumentation-test-martech';
-  window.hlx.rum.generation = generation;
 
   if (random && (random * weight < 1)) {
   // store a page view
@@ -417,7 +415,7 @@ loadScript('https://www.adobe.com/marketingtech/main.min.js', () => {
       weight,
       id,
       referer: window.location.href,
-      generation,
+      generation: 'instrumentation-test-martech',
     }, weight);
   }
   /* eslint-enable no-underscore-dangle */
