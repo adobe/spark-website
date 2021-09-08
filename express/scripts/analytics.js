@@ -33,7 +33,7 @@ w.marketingtech = {
     analytics: {
       additionalAccounts: 'adbemmarvelweb.prod',
     },
-    target: true,
+    target: (w.spark.martech === 'rush'),
   },
 };
 
