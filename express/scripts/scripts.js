@@ -47,7 +47,7 @@ export function getIcon(icon, alt = icon) {
     'linkedin', 'twitter', 'youtube', 'discord', 'behance', 'creative-cloud',
     'hamburger', 'adchoices', 'play', 'not-found', 'snapchat', 'learn', 'magicwand',
     'upload', 'resize', 'download', 'creativecloud', 'shapes', 'users', 'color', 'stickers', 'landscape',
-    'globe', 'chevron'];
+    'globe', 'chevron', 'blank', 'premium'];
   if (symbols.includes(icon)) {
     return `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-${icon}">
       <use href="/express/icons.svg#${icon}"></use>
@@ -529,7 +529,7 @@ function decorateBlocks() {
     if ($section) {
       $section.classList.add(`${blockName}-container`.replace(/--/g, '-'));
     }
-    const blocksWithOptions = ['checker-board', 'template-list', 'steps', 'cards', 'quotes', 'page-list',
+    const blocksWithOptions = ['checker-board', 'new-template-list', 'template-list', 'steps', 'cards', 'quotes', 'page-list',
       'columns', 'show-section-only', 'image-list', 'feature-list'];
     blocksWithOptions.forEach((b) => {
       if (blockName.startsWith(`${b}-`)) {
@@ -826,6 +826,32 @@ function decorateHero() {
       $heroSection.classList.add('hero-noimage');
     }
   }
+}
+
+export function addSearchQueryToHref(href) {
+  const postEditorLinksAllowList = [
+    'adobesparkpost.app.link',
+    'spark.adobe.com/sp/design',
+    'express.adobe.com/sp/design',
+  ];
+  const isCreateSeoPage = window.location.pathname.includes('/express/create/');
+  const isDiscoverSeoPage = window.location.pathname.includes('/express/discover/');
+  const isPostEditorLink = postEditorLinksAllowList.some((editorLink) => href.includes(editorLink));
+
+  if (!(isPostEditorLink && (isCreateSeoPage || isDiscoverSeoPage))) {
+    return href;
+  }
+
+  const templateSearchTag = getMeta('short-title');
+  const url = new URL(href);
+  const params = url.searchParams;
+
+  if (templateSearchTag) {
+    params.set('search', templateSearchTag);
+  }
+  url.search = params.toString();
+
+  return url.toString();
 }
 
 function decorateButtons() {
