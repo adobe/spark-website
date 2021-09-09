@@ -4,7 +4,7 @@ main .columns-dark-container {
   color: white;
 }
 
-main .columns {
+main .columns:not(.fullsize) {
   margin-top: 70px;
 }
 
