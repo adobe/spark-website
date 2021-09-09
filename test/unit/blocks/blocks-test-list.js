@@ -59,5 +59,25 @@ export default [
     name: 'Columns - 10 numbered rows',
     input: 'input/columns.table.numbered.10.doc.html',
     expected: 'expected/columns.table.numbered.10.block.html',
+  // }, {
+  //   name: 'Banner - h2',
+  //   input: 'input/new-banner.h2.doc.html',
+  //   expected: 'expected/new-banner.h2.block.html',
+  // }, {
+  //   name: 'Banner - h3',
+  //   input: 'input/new-banner.h3.doc.html',
+  //   expected: 'expected/new-banner.h3.block.html',
+  // }, {
+  //   name: 'Banner - dark button',
+  //   input: 'input/new-banner.button.doc.html',
+  //   expected: 'expected/new-banner.h2.button.block.html',
+  // }, {
+  //   name: 'Banner - h1 - converted to h2',
+  //   input: 'input/new-banner.h1.doc.html',
+  //   expected: 'expected/new-banner.h2.block.html',
+  }, {
+    name: 'Banner - h4 - converted to h3',
+    input: 'input/new-banner.h4.doc.html',
+    expected: 'expected/new-banner.h3.block.html',
   },
 ];
