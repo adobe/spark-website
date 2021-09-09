@@ -790,7 +790,7 @@ main .section-wrapper .hero {
     text-align: unset;
   }
 
-  main .section-wrapper a.button:any-link {
+  main .section-wrapper .block:not(.columns.center) a.button:any-link {
     margin-left: 0;
     font-size: 13px;
     font-weight: 400;
