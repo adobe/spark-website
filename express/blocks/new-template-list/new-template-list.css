@@ -238,6 +238,10 @@ main .new-template-list.horizontal .template:not(.placeholder) .template-link {
   display: none;
 }
 
+main .new-template-list.sixcols {
+  width: 350px;
+}
+
 main .new-template-list.sixcols .template {
   position: relative;
   display: inline-flex;
@@ -411,6 +415,10 @@ main .new-template-list.flex-masonry .template.appear {
     max-width: 748px;
   }
 
+  main .new-template-list.sixcols {
+    width: 748px;
+  }
+
   main .new-template-list.sixcols > .masonry-col {
     max-width: 187px;
   }
@@ -466,6 +474,10 @@ main .new-template-list.flex-masonry .template.appear {
 
   main .new-template-list-sixcols-container > div {
     max-width: 1122px;
+  }
+
+  main .new-template-list.sixcols {
+    width: 1122px;
   }
 
   /* template-list inside columns */
