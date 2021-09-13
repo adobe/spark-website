@@ -564,6 +564,7 @@ main .section-wrapper:first-of-type {
 
 main .section-wrapper > div {
     margin: auto;
+    min-width: 672px;
     max-width: 672px;
     padding: 0 32px;
 }
@@ -815,6 +816,7 @@ main .section-wrapper .hero {
 }
 
 main .section-wrapper > div {
+  min-width: 830px;
   max-width: 830px;
 }
 
