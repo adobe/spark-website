@@ -701,7 +701,6 @@ function addFavIcon() {
 
 function postLCP() {
   loadFonts();
-  const martechUrl = '/express/scripts/martech.js';
   loadCSS('/express/styles/lazy-styles.css');
   loadBlocks();
   resolveFragments();
@@ -710,6 +709,13 @@ function postLCP() {
   const usp = new URLSearchParams(window.location.search);
   const martech = usp.get('martech');
 
+  const analyticsUrl = '/express/scripts/analytics.js';
+
+  if (!(martech === 'off' || document.querySelector(`head script[src="${analyticsUrl}"]`))) {
+    loadScript(analyticsUrl, null, 'module');
+  }
+
+  const martechUrl = '/express/scripts/martech.js';
   // loadLazyFooter();
   if (!(martech === 'off' || document.querySelector(`head script[src="${martechUrl}"]`))) {
     let ms = 3000;
@@ -873,6 +879,7 @@ async function decorateTesting() {
     // eslint-disable-next-line no-console
     console.log('rushing martech');
     window.spark.martech = 'rush';
+    loadScript('/express/scripts/analytics.js', null, 'module');
     loadScript('/express/scripts/martech.js', null, 'module');
   }
 
