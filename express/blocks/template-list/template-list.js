@@ -49,6 +49,9 @@ function masonrize($cells, $masonry, force) {
       if ($image) {
         if (!$image.complete) {
           incomplete = true;
+        } else {
+          const calcOffsetHeight = ($image.naturalHeight / $image.naturalWidth) * colWidth;
+          column.outerHeight += calcOffsetHeight;
         }
       }
       const $video = $cell.querySelector('video');
@@ -58,9 +61,6 @@ function masonrize($cells, $masonry, force) {
           incomplete = true;
         }
       }
-
-      const calcOffsetHeight = ($image.naturalHeight / $image.naturalWidth) * colWidth;
-      column.outerHeight += calcOffsetHeight;
     });
 
     if (incomplete) {
