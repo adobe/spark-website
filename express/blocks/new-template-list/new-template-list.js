@@ -144,13 +144,13 @@ export async function decorateTemplateList($block) {
   let rows = $block.children.length;
   const locale = getLocale(window.location);
   if (rows === 0 && locale !== 'us') {
-    const tls = Array.from($block.closest('main').querySelectorAll('.template-list'));
+    const tls = Array.from($block.closest('main').querySelectorAll('.new-template-list'));
     const i = tls.indexOf($block);
 
     // eslint-disable-next-line no-await-in-loop
     const $blueprint = await fetchBlueprint(window.location.pathname);
 
-    const $bpBlock = $blueprint.querySelectorAll('.template-list')[i];
+    const $bpBlock = $blueprint.querySelectorAll('.new-template-list')[i];
     if ($bpBlock) {
       $block.innerHTML = $bpBlock.innerHTML;
     }
