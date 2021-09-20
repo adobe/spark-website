@@ -709,13 +709,13 @@ function postLCP() {
   const usp = new URLSearchParams(window.location.search);
   const martech = usp.get('martech');
 
-  const analyticsUrl = '/express/scripts/analytics.js';
+  const analyticsUrl = '/express/scripts/instrument.js';
 
   if (!(martech === 'off' || document.querySelector(`head script[src="${analyticsUrl}"]`))) {
     loadScript(analyticsUrl, null, 'module');
   }
 
-  const martechUrl = '/express/scripts/martech.js';
+  const martechUrl = '/express/scripts/delayed.js';
   // loadLazyFooter();
   if (!(martech === 'off' || document.querySelector(`head script[src="${martechUrl}"]`))) {
     let ms = 3000;
@@ -879,8 +879,8 @@ async function decorateTesting() {
     // eslint-disable-next-line no-console
     console.log('rushing martech');
     window.spark.martech = 'rush';
-    loadScript('/express/scripts/analytics.js', null, 'module');
-    loadScript('/express/scripts/martech.js', null, 'module');
+    loadScript('/express/scripts/instrument.js', null, 'module');
+    loadScript('/express/scripts/delayed.js', null, 'module');
   }
 
   if (!window.location.host.includes('adobe.com')) {
@@ -1236,6 +1236,10 @@ async function decoratePage() {
   if (window.spark.martech !== 'rush') {
     unhideBody(bodyHideStyleId);
   }
+
+  window.setTimeout(() => {
+    unhideBody(bodyHideStyleId);
+  }, 3000);
 }
 
 window.spark = {};
