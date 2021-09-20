@@ -47,7 +47,7 @@ export function getIcon(icon, alt = icon) {
     'linkedin', 'twitter', 'youtube', 'discord', 'behance', 'creative-cloud',
     'hamburger', 'adchoices', 'play', 'not-found', 'snapchat', 'learn', 'magicwand',
     'upload', 'resize', 'download', 'creativecloud', 'shapes', 'users', 'color', 'stickers', 'landscape',
-    'globe', 'chevron'];
+    'globe', 'chevron', 'blank', 'premium', 'brand', 'templates'];
   if (symbols.includes(icon)) {
     return `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-${icon}">
       <use href="/express/icons.svg#${icon}"></use>
@@ -61,6 +61,38 @@ export function getIconElement(icon) {
   const $div = createTag('div');
   $div.innerHTML = getIcon(icon);
   return ($div.firstChild);
+}
+
+export function transformLinkToAnimation($a) {
+  if (!$a || !$a.href.endsWith('.mp4')) {
+    return null;
+  }
+  const params = new URL($a.href).searchParams;
+  const attribs = {};
+  ['playsinline', 'autoplay', 'loop', 'muted'].forEach((p) => {
+    if (params.get(p) !== 'false') attribs[p] = '';
+  });
+  // use closest picture as poster
+  const $poster = $a.closest('div').querySelector('picture source');
+  if ($poster) {
+    attribs.poster = $poster.srcset;
+    $poster.parentNode.remove();
+  }
+  // replace anchor with video element
+  const helixId = new URL($a.href).pathname.split('/')[2];
+  const videoHref = `./media_${helixId}.mp4`;
+  const $video = createTag('video', attribs);
+  $video.innerHTML = `<source src="${videoHref}" type="video/mp4">`;
+  const $innerDiv = $a.closest('div');
+  $innerDiv.prepend($video);
+  $innerDiv.classList.add('hero-animation-overlay');
+  $a.replaceWith($video);
+  // autoplay animation
+  $video.addEventListener('canplay', () => {
+    $video.muted = true;
+    $video.play();
+  });
+  return $video;
 }
 
 export function linkPicture($picture) {
@@ -89,7 +121,10 @@ export function linkImage($elem) {
 
 function wrapSections(element) {
   document.querySelectorAll(element).forEach(($div) => {
-    if (!$div.id) {
+    if ($div.childNodes.length === 0) {
+      // remove empty sections
+      $div.remove();
+    } else if (!$div.id) {
       const $wrapper = createTag('div', { class: 'section-wrapper' });
       $div.parentNode.appendChild($wrapper);
       $wrapper.appendChild($div);
@@ -497,7 +532,7 @@ function decorateBlocks() {
     if ($section) {
       $section.classList.add(`${blockName}-container`.replace(/--/g, '-'));
     }
-    const blocksWithOptions = ['checker-board', 'template-list', 'steps', 'cards', 'quotes', 'page-list',
+    const blocksWithOptions = ['checker-board', 'new-template-list', 'template-list', 'steps', 'cards', 'quotes', 'page-list',
       'columns', 'show-section-only', 'image-list', 'feature-list'];
     blocksWithOptions.forEach((b) => {
       if (blockName.startsWith(`${b}-`)) {
@@ -802,6 +837,32 @@ function decorateHero() {
   }
 }
 
+export function addSearchQueryToHref(href) {
+  const postEditorLinksAllowList = [
+    'adobesparkpost.app.link',
+    'spark.adobe.com/sp/design',
+    'express.adobe.com/sp/design',
+  ];
+  const isCreateSeoPage = window.location.pathname.includes('/express/create/');
+  const isDiscoverSeoPage = window.location.pathname.includes('/express/discover/');
+  const isPostEditorLink = postEditorLinksAllowList.some((editorLink) => href.includes(editorLink));
+
+  if (!(isPostEditorLink && (isCreateSeoPage || isDiscoverSeoPage))) {
+    return href;
+  }
+
+  const templateSearchTag = getMeta('short-title');
+  const url = new URL(href);
+  const params = url.searchParams;
+
+  if (templateSearchTag) {
+    params.set('search', templateSearchTag);
+  }
+  url.search = params.toString();
+
+  return url.toString();
+}
+
 function decorateButtons() {
   const noButtonBlocks = ['template-list'];
   document.querySelectorAll('main a').forEach(($a) => {
@@ -1017,6 +1078,29 @@ export function unwrapBlock($block) {
   if (!$postBlockSection.hasChildNodes()) {
     $postBlockSection.remove();
   }
+}
+
+export function normalizeHeadings(block, allowedHeadings) {
+  const allowed = allowedHeadings.map((h) => h.toLowerCase());
+  block.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((tag) => {
+    const h = tag.tagName.toLowerCase();
+    if (allowed.indexOf(h) === -1) {
+      // current heading is not in the allowed list -> try first to "promote" the heading
+      let level = parseInt(h.charAt(1), 10) - 1;
+      while (allowed.indexOf(`h${level}`) === -1 && level > 0) {
+        level -= 1;
+      }
+      if (level === 0) {
+        // did not find a match -> try to "downgrade" the heading
+        while (allowed.indexOf(`h${level}`) === -1 && level < 7) {
+          level += 1;
+        }
+      }
+      if (level !== 7) {
+        tag.outerHTML = `<h${level}>${tag.textContent}</h${level}>`;
+      }
+    }
+  });
 }
 
 function splitSections() {

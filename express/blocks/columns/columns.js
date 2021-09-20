@@ -11,7 +11,7 @@
  */
 /* global */
 
-import { linkImage } from '../../scripts/scripts.js';
+import { linkImage, transformLinkToAnimation } from '../../scripts/scripts.js';
 
 export default function decorate($block) {
   const $rows = Array.from($block.children);
@@ -37,6 +37,12 @@ export default function decorate($block) {
   $rows.forEach(($row, rowNum) => {
     const $cells = Array.from($row.children);
     $cells.forEach(($cell, cellNum) => {
+      const icons = $cell.querySelectorAll('img.icon, svg.icon');
+      if (icons.length === 1) {
+        // treat single icon as brand icon
+        icons[0].classList.add('brand');
+      }
+
       if (cellNum === 0 && isNumberedList) {
         // add number to first cell
         let num = rowNum + 1;
@@ -62,9 +68,20 @@ export default function decorate($block) {
       }
       // this probably needs to be tighter and possibly earlier
       const $a = $cell.querySelector('a');
-      if ($pics[0] && $a) {
+      if ($a) {
         if ($a.textContent.startsWith('https://')) {
-          linkImage($cell);
+          if ($a.href.endsWith('.mp4')) {
+            transformLinkToAnimation($a);
+          } else if ($pics[0]) {
+            linkImage($cell);
+          }
+        }
+      }
+      if ($a && $a.classList.contains('button')) {
+        if ($block.classList.contains('fullsize')) {
+          $a.classList.add('xlarge');
+        } else if ($a.classList.contains('light')) {
+          $a.classList.replace('accent', 'primary');
         }
       }
       $cell.querySelectorAll(':scope p:empty').forEach(($p) => $p.remove());

@@ -1,0 +1,43 @@
+main .section-wrapper.new-banner-container {
+  background-color: var(--color-info-accent);
+  padding: 120px 15px;
+  margin-top: 80px;
+}
+
+main .section-wrapper.new-banner-container > div {
+  padding: 0;
+}
+
+main .section-wrapper.new-banner-container + .section-wrapper {
+  margin-top: 0;
+}
+
+main .new-banner {
+  padding: 0;
+  margin: 0 auto;
+  color: var(--color-white);
+}
+
+main .new-banner h2, main .new-banner h3 {
+  color: var(--color-white);
+}
+
+main .new-banner p.button-container {
+  margin-top: 56px;
+}
+
+main .new-banner a:any-link {
+  color: var(--color-white);
+}
+
+main .new-banner .icon {
+  height: 72px;
+  width: 72px;
+}
+
+@media (min-width:900px) {
+  main .section-wrapper.new-banner-container {
+    padding-left: 56px;
+    padding-right: 56px;
+  }
+}
