@@ -41,6 +41,9 @@ export default function decorate($block) {
       if (icons.length === 1) {
         // treat single icon as brand icon
         icons[0].classList.add('brand');
+        if (icons[0].classList.contains('icon-adobe-spark')) {
+          $row.classList.add('has-adobe-logo');
+        }
       }
 
       if (cellNum === 0 && isNumberedList) {

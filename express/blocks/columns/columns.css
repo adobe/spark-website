@@ -56,8 +56,23 @@ main .columns.center > div {
   align-items: center;
 }
 
-main .columns .brand.icon {
+main .columns .icon-adobe-spark {
   display: none;
+}  
+
+body.no-brand-header main .columns .has-adobe-logo .icon-adobe-spark {
+  display: unset;
+  height: 32px;
+  width: max-content;
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+body.no-brand-header main .columns .has-adobe-logo {
+  padding-top: 72px;
+  position: relative;
 }
 
 main .columns .social.icon {
@@ -66,16 +81,21 @@ main .columns .social.icon {
   margin-right: 24px;
 }
 
-@media (min-width:900px) {
+@media (min-width: 900px) {
+  body.no-brand-header main .columns .brand.icon {
+    position: unset;
+    top: unset;
+    left: unset;
+    transform: unset;
+  }
+
+  body.no-brand-header main .columns .has-adobe-logo {
+    padding-top: 0;
+  }
+
   main .columns > div {
     flex-direction: row;
     text-align: left;
-  }
-
-  body.no-brand-header main .columns .brand.icon {
-    display: unset;
-    height: 32px;
-    width: max-content;
   }
 
   main .section-wrapper div.columns > div > div {
@@ -119,5 +139,41 @@ main .columns .social.icon {
 
   main .columns.fullsize + h2 {
     margin-top: 0;
+  }
+}
+
+@media (max-width: 899px) {
+  main .columns .hero-animation-overlay {
+    order: -1;
+  }
+
+  main .new-template-list-sixcols-container > div > .button-container {
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 40px;
+  }
+
+  main .new-template-list-sixcols-container > div > .button-container a.button {
+    font-size: var(--body-font-size-l);
+    margin-top: 40px;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-weight: 400;
+    animation-name: floating-up-animation;
+    animation-duration: 1s;
+  }
+
+  main .new-template-list-sixcols-container > div > div .button-container {
+    display: none;
+  }
+}
+
+@keyframes floating-up-animation {
+  0% {
+      transform: translateY(100px);
+  }
+
+  100% {
+      transform: none;
   }
 }
