@@ -103,8 +103,6 @@ async function showRegionPicker() {
   });
 }
 
-loadScript('https://www.adobe.com/etc/beagle/public/globalnav/adobe-privacy/latest/privacy.min.js');
-
 const locale = getLocale(window.location);
 
 window.fedsConfig = {
