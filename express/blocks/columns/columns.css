@@ -56,11 +56,15 @@ main .columns.center > div {
   align-items: center;
 }
 
-main .columns .icon-adobe-spark {
+main .columns .brand.icon {
   display: none;
-}  
+}
 
-body.no-brand-header main .columns .has-adobe-logo .icon-adobe-spark {
+main .fixed-button.button-container {
+  display: none;
+}
+
+body.no-brand-header main .columns .brand.icon {
   display: unset;
   height: 32px;
   width: max-content;
@@ -70,7 +74,7 @@ body.no-brand-header main .columns .has-adobe-logo .icon-adobe-spark {
   transform: translateX(-50%);
 }
 
-body.no-brand-header main .columns .has-adobe-logo {
+body.no-brand-header main .columns .has-brand {
   padding-top: 72px;
   position: relative;
 }
@@ -89,7 +93,7 @@ main .columns .social.icon {
     transform: unset;
   }
 
-  body.no-brand-header main .columns .has-adobe-logo {
+  body.no-brand-header main .columns .has-brand {
     padding-top: 0;
   }
 
@@ -143,37 +147,68 @@ main .columns .social.icon {
 }
 
 @media (max-width: 899px) {
-  main .columns .hero-animation-overlay {
+  main .columns-fullsize-center-container .columns.fullsize .hero-animation-overlay {
     order: -1;
   }
 
-  main .new-template-list-sixcols-container > div > .button-container {
-    position: -webkit-sticky;
-    position: sticky;
-    bottom: 40px;
+  main .columns-fullsize-center-container .columns.fullsize > div > div {
+    display: grid;
+  }
+  
+  main .columns-fullsize-center-container .columns.fullsize > div > div .button-container {
+    grid-row: 2;
   }
 
-  main .new-template-list-sixcols-container > div > .button-container a.button {
-    font-size: var(--body-font-size-l);
-    margin-top: 40px;
-    padding: 14px 30px;
-    border-radius: 30px;
-    font-weight: 400;
-    animation-name: floating-up-animation;
-    animation-duration: 1s;
+  main .columns-fullsize-center-container .columns.fullsize .has-brand > div .button-container {
+    grid-row: 3;
   }
 
-  main .new-template-list-sixcols-container > div > div .button-container {
+  main .columns-fullsize-center-container .columns.fullsize > div > div p {
+    margin: 16px 0;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize > div > div .button-container {
+    margin: 16px 0;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize > div > div .button-container a {
+    margin: 16px 0 0 0;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize .has-brand > div p:first-child {
+    margin: 0;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize > div > div .button-container.fixed-button {
+    margin: 0;
+  }
+
+  main .fixed-button.button-container {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: 20px;
+    z-index: 2;
+    background: linear-gradient(180deg, transparent 0%, var(--color-white) 100%);
+    transform: translateY(101%);
+    transition: transform 1s, opacity 0s ease 1s;
+    pointer-events: none;
+  }
+
+  main .fixed-button.button-container.shown {
+    transform: none;
+    pointer-events: all;
+    bottom: 0;
+  }
+
+  body.has-fixed-button .button-container a {
     display: none;
   }
-}
 
-@keyframes floating-up-animation {
-  0% {
-      transform: translateY(100px);
-  }
-
-  100% {
-      transform: none;
+  body.has-fixed-button .button-container a.primaryCTA,
+  body.has-fixed-button .button-container.fixed-button a {
+    display: inline-block;
   }
 }
