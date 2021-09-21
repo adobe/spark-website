@@ -193,7 +193,7 @@ main .columns .social.icon {
     z-index: 2;
     background: linear-gradient(180deg, transparent 0%, var(--color-white) 100%);
     transform: translateY(101%);
-    transition: transform 1s, opacity 0s ease 1s;
+    transition: transform 1s;
     pointer-events: none;
   }
 
