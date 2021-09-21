@@ -208,7 +208,8 @@ main .columns .social.icon {
   }
 
   body.has-fixed-button .button-container a.primaryCTA,
-  body.has-fixed-button .button-container.fixed-button a {
+  body.has-fixed-button .button-container.fixed-button a,
+  body.has-fixed-button .new-banner-container .button-container a {
     display: inline-block;
   }
 }
