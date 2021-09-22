@@ -22,6 +22,7 @@ export default function decorate(block) {
       const link = p.querySelector('a');
       link.classList.add('medium', 'secondary');
       link.classList.remove('accent');
+      link.classList.remove('primary');
     });
     const div = links[0].closest('div');
     const platformEl = document.createElement('div');
