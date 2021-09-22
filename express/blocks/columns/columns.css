@@ -203,7 +203,7 @@ main .columns .social.icon {
     bottom: 0;
   }
 
-  body.has-fixed-button .button-container a {
+  body.has-fixed-button .button-container a.primary {
     display: none;
   }
 
