@@ -60,22 +60,46 @@ main .columns .brand.icon {
   display: none;
 }
 
+main .fixed-button.button-container {
+  display: none;
+}
+
+body.no-brand-header main .columns .brand.icon {
+  display: unset;
+  height: 32px;
+  width: max-content;
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+body.no-brand-header main .columns .has-brand {
+  padding-top: 72px;
+  position: relative;
+}
+
 main .columns .social.icon {
   width: 32px;
   height: 32px;
   margin-right: 24px;
 }
 
-@media (min-width:900px) {
+@media (min-width: 900px) {
+  body.no-brand-header main .columns .brand.icon {
+    position: unset;
+    top: unset;
+    left: unset;
+    transform: unset;
+  }
+
+  body.no-brand-header main .columns .has-brand {
+    padding-top: 0;
+  }
+
   main .columns > div {
     flex-direction: row;
     text-align: left;
-  }
-
-  body.no-brand-header main .columns .brand.icon {
-    display: unset;
-    height: 32px;
-    width: max-content;
   }
 
   main .section-wrapper div.columns > div > div {
@@ -119,5 +143,73 @@ main .columns .social.icon {
 
   main .columns.fullsize + h2 {
     margin-top: 0;
+  }
+}
+
+@media (max-width: 899px) {
+  main .columns-fullsize-center-container .columns.fullsize .hero-animation-overlay {
+    order: -1;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize > div > div {
+    display: grid;
+  }
+  
+  main .columns-fullsize-center-container .columns.fullsize > div > div .button-container {
+    grid-row: 2;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize .has-brand > div .button-container {
+    grid-row: 3;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize > div > div p {
+    margin: 16px 0;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize > div > div .button-container {
+    margin: 16px 0;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize > div > div .button-container a {
+    margin: 16px 0 0 0;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize .has-brand > div p:first-child {
+    margin: 0;
+  }
+
+  main .columns-fullsize-center-container .columns.fullsize > div > div .button-container.fixed-button {
+    margin: 0;
+  }
+
+  main .fixed-button.button-container {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: 20px;
+    z-index: 2;
+    background: linear-gradient(180deg, transparent 0%, var(--color-white) 100%);
+    transform: translateY(101%);
+    transition: transform 1s;
+    pointer-events: none;
+  }
+
+  main .fixed-button.button-container.shown {
+    transform: none;
+    pointer-events: all;
+    bottom: 0;
+  }
+
+  body.has-fixed-button .button-container a.primary {
+    display: none;
+  }
+
+  body.has-fixed-button .button-container a.primaryCTA,
+  body.has-fixed-button .button-container.fixed-button a,
+  body.has-fixed-button .new-banner-container .button-container a {
+    display: inline-block;
   }
 }
