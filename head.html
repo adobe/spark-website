@@ -1,4 +1,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script>
+  window.marketingtech = {
+    adobe: {
+      target: true,
+      launch: {
+        url: 'https://assets.adobedtm.com/d4d114c60e50/cf25c910a920/launch-1bba233684fa-development.js',
+        load: function (l) {
+          setTimeout(l, 3000);
+        }
+      }
+    }
+  };
+</script>
+<script src="https://www.adobe.com/marketingtech/main.alloy.min.js"></script>
 <script src="/express/scripts/scripts.js" type="module" crossorigin="use-credentials"></script>
 <link rel="stylesheet" href="/express/styles/styles.css"/>
 <link rel="icon" href="data:,">

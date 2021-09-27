@@ -709,11 +709,11 @@ function postLCP() {
   const usp = new URLSearchParams(window.location.search);
   const martech = usp.get('martech');
 
-  const analyticsUrl = '/express/scripts/instrument.js';
+  // const analyticsUrl = '/express/scripts/instrument.js';
 
-  if (!(martech === 'off' || document.querySelector(`head script[src="${analyticsUrl}"]`))) {
-    loadScript(analyticsUrl, null, 'module');
-  }
+  // if (!(martech === 'off' || document.querySelector(`head script[src="${analyticsUrl}"]`))) {
+  //   loadScript(analyticsUrl, null, 'module');
+  // }
 
   const martechUrl = '/express/scripts/delayed.js';
   // loadLazyFooter();
