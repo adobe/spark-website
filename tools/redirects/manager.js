@@ -45,9 +45,9 @@ function toClassName(name) {
 function createTable(redirects) {
   const table = createTag('table');
   redirects.forEach((row) => {
-    const rowEl = createTag('tr', { class:'row' });
+    const rowEl = createTag('tr', { class: 'row' });
     const sourceEl = createTag('td');
-    sourceEl.innerHTML = row.Source;
+    sourceEl.innerHTML = `<a href='${row.Source}'>${row.Source}</a>`;
     rowEl.appendChild(sourceEl);
     const destEl = createTag('td');
     destEl.innerHTML = row.Destination;
