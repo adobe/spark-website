@@ -45,6 +45,17 @@
           },
         },
       },
+      // REDIRECTS --------------------------------------------------------------------
+      {
+        id: 'redirects',
+        condition: (s) => (s.location.pathname.includes('/redirects.json')),
+        button: {
+          text: 'Redirects Manager',
+          action: (_) => {
+            window.open('/tools/redirects/manager.html', 'hlx-sidekick-redirects');
+          },
+        },
+      },
     ],
   });
 })();
