@@ -70,18 +70,15 @@ async function checkRedirects() {
     const tr = rows[i];
     const redirect = redirects[i];
     // eslint-disable-next-line no-await-in-loop
-    const resp = await fetch(redirect.Source, { redirect: 'manual' });
+    const resp = await fetch(redirect.Source);
 
     const { status } = resp;
-    const location = resp.headers.get('location');
 
-    const ok = (status === 301) && (location === redirect.Destination);
+    const ok = (status === 200) && (resp.redirected);
     const td = createTag('td', {
       class: ok ? 'ok' : 'error',
     });
-    td.innerHTML = `${status} ${location || ''}`;
-    console.log(resp.status);
-    console.log(resp.headers.get('location'));
+    td.innerHTML = `${resp.redirected ? '301/302' : status}`;
     tr.appendChild(td);
     tr.classList.add(ok ? '' : 'orange');
   }
