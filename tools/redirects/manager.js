@@ -78,7 +78,7 @@ async function checkRedirects() {
     const td = createTag('td', {
       class: ok ? 'ok' : 'error',
     });
-    td.innerHTML = `${resp.redirected ? '301/302' : status}`;
+    td.innerHTML = `${ok ? '301/302' : status}`;
     tr.appendChild(td);
     if (!ok) tr.classList.add('orange');
   }
