@@ -47,7 +47,7 @@ function createTable(redirects) {
   redirects.forEach((row) => {
     const rowEl = createTag('tr', { class: 'row' });
     const sourceEl = createTag('td');
-    sourceEl.innerHTML = `<a href='${row.Source}'>${row.Source}</a>`;
+    sourceEl.innerHTML = `<a target="_blank" href="${row.Source}">${row.Source}</a>`;
     rowEl.appendChild(sourceEl);
     const destEl = createTag('td');
     destEl.innerHTML = row.Destination;
