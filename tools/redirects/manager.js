@@ -70,11 +70,11 @@ async function checkRedirects() {
     const tr = rows[i];
     const redirect = redirects[i];
     // eslint-disable-next-line no-await-in-loop
-    const resp = await fetch(redirect.Source);
+    const resp = await fetch(redirect.Source, { redirect: 'manual' });
 
     const { status } = resp;
 
-    const ok = (status === 200) && (resp.redirected);
+    const ok = (status === 0);
     const td = createTag('td', {
       class: ok ? 'ok' : 'error',
     });
