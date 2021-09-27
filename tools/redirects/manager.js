@@ -80,7 +80,7 @@ async function checkRedirects() {
     });
     td.innerHTML = `${resp.redirected ? '301/302' : status}`;
     tr.appendChild(td);
-    tr.classList.add(ok ? '' : 'orange');
+    if (!ok) tr.classList.add('orange');
   }
 }
 
