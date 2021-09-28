@@ -64,7 +64,7 @@ async function checkRedirects() {
     const tr = rows[i];
     const redirect = redirects[i];
     // eslint-disable-next-line no-await-in-loop
-    const resp = await fetch(redirect.Source, { redirect: 'manual' });
+    const resp = await fetch(redirect.Source, { cache: 'reload', 'manual' });
 
     const { status } = resp;
 
