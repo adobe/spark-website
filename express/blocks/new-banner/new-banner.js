@@ -9,26 +9,20 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+/* global */
 
-module.exports = {
-  root: true,
-  extends: '@adobe/helix',
-  rules: {
-    // allow reassigning param
-    'no-param-reassign': [2, { props: false }],
-    'linebreak-style': ['error', 'unix'],
-    'import/extensions': ['error', {
-      js: 'always',
-    }],
-  },
-  parser: '@babel/eslint-parser',
-  parserOptions: {
-    allowImportExportEverywhere: true,
-    sourceType: 'module',
-    requireConfigFile: false,
-    babelOptions: {
-      configFile: './.babelrc',
-    },
-  },
-  plugins: ['@babel'],
-};
+import {
+  normalizeHeadings,
+} from '../../scripts/scripts.js';
+
+export default function decorate($block) {
+  normalizeHeadings($block, ['h2', 'h3']);
+
+  // button on dark background
+  $block.querySelectorAll('a.button').forEach((button) => {
+    button.classList.remove('primary');
+    button.classList.remove('secondary');
+    button.classList.add('accent');
+    button.classList.add('dark');
+  });
+}

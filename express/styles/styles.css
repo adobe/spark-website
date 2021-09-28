@@ -76,6 +76,11 @@ header {
     background-color: white;
 }
 
+body.no-brand-header header, body.no-desktop-brand-header header {
+  height: 64px;
+  background-image: unset;
+}
+
 #feds-header {
   opacity: 0;
 }
@@ -275,11 +280,6 @@ header {
         display: flex;
         align-items: center;
     }
-}
-
-footer {
-
-  margin-top: 120px;
 }
 
 /* buttons */
@@ -562,6 +562,10 @@ main .section-wrapper:first-of-type {
   padding: 0;
 }
 
+main .section-wrapper:last-of-type {
+  padding-bottom: 120px;
+}
+
 main .section-wrapper > div {
     margin: auto;
     max-width: 672px;
@@ -745,6 +749,10 @@ main .section-wrapper .hero {
     padding-top: 0;
   }
 
+  main .section-wrapper:last-of-type {
+    padding-bottom: 80px;
+  }
+
     main .section-wrapper h2 {
         font-size: 36px;
         line-height: 39px;
@@ -785,7 +793,7 @@ main .section-wrapper .hero {
     text-align: unset;
   }
 
-  main .section-wrapper a.button:any-link {
+  main .section-wrapper .block:not(.columns.center) a.button:any-link {
     margin-left: 0;
     font-size: 13px;
     font-weight: 400;
