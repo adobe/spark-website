@@ -23,9 +23,9 @@ import {
 function masonrize($cells, $masonry, force) {
   const colWidth = 264;
 
-  const width = $masonry.offsetWidth;
-  // console.log($masonry.offsetWidth);
+  const width = Math.min(window.innerWidth - 64, 830);
   let numCols = Math.floor(width / colWidth);
+
   if (numCols < 1) numCols = 1;
   if ((numCols !== $masonry.children.length) || force) {
     $masonry.innerHTML = '';
@@ -49,6 +49,9 @@ function masonrize($cells, $masonry, force) {
       if ($image) {
         if (!$image.complete) {
           incomplete = true;
+        } else {
+          const calcOffsetHeight = ($image.naturalHeight / $image.naturalWidth) * colWidth;
+          column.outerHeight += calcOffsetHeight;
         }
       }
       const $video = $cell.querySelector('video');
@@ -58,9 +61,6 @@ function masonrize($cells, $masonry, force) {
           incomplete = true;
         }
       }
-
-      // console.log(`cell offset height: ${$cell.offsetHeight}`);
-      column.outerHeight += $cell.offsetHeight;
     });
 
     if (incomplete) {
