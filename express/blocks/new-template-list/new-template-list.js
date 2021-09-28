@@ -36,11 +36,20 @@ class Masonry {
     this.startResizing = 0;
   }
 
+  static INCOMPLETE = 0;
+
+  static IDENTICAL = 1;
+
+  static CHANGED = 2;
+
   // set up fresh grid if necessary
   setupColumns() {
-    let redraw = false;
+    let result = Masonry.IDENTICAL;
     const colWidth = this.$block.classList.contains('sixcols') ? 175 : 264;
     const width = this.$block.offsetWidth;
+    if (!width) {
+      return Masonry.INCOMPLETE;
+    }
     let numCols = Math.floor(width / colWidth);
     if (numCols < 1) numCols = 1;
     if (numCols !== this.$block.querySelectorAll('.masonry-col').length) {
@@ -54,10 +63,10 @@ class Masonry {
         });
         this.$block.appendChild($column);
       }
-      redraw = true;
+      result = Masonry.CHANGED;
     }
     [this.nextColumn] = this.columns;
-    return redraw;
+    return result;
   }
 
   // calculate least tallest column to add next cell to
@@ -67,7 +76,7 @@ class Masonry {
     } else {
       const minOuterHeight = Math.min(...this.columns.map((col) => col.outerHeight));
       this.nextColumn = this.columns.find((col) => col.outerHeight === minOuterHeight);
-      return this.nextColumn;
+      return this.nextColumn || this.columns[0];
     }
   }
 
@@ -83,8 +92,15 @@ class Masonry {
   // distribute cells to columns
   draw(cells) {
     if (!cells) {
-      if (!this.setupColumns()) {
+      const setup = this.setupColumns();
+      if (setup === Masonry.IDENTICAL) {
         // no redrawing needed
+        return;
+      } else if (setup === Masonry.INCOMPLETE) {
+        // setup incomplete, try again
+        window.setTimeout(() => {
+          this.draw(cells);
+        }, 200);
         return;
       }
     }

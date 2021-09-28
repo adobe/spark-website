@@ -26,5 +26,9 @@ module.exports = {
     allowImportExportEverywhere: true,
     sourceType: 'module',
     requireConfigFile: false,
+    babelOptions: {
+      configFile: './.babelrc',
+    },
   },
+  plugins: ['@babel'],
 };
