@@ -563,7 +563,7 @@ main .section-wrapper:first-of-type {
 }
 
 main .section-wrapper:last-of-type {
-  padding-bottom: 80px;
+  padding-bottom: 120px;
 }
 
 main .section-wrapper > div {
@@ -747,6 +747,10 @@ main .section-wrapper .hero {
 
   main .section-wrapper:first-of-type {
     padding-top: 0;
+  }
+
+  main .section-wrapper:last-of-type {
+    padding-bottom: 80px;
   }
 
     main .section-wrapper h2 {
