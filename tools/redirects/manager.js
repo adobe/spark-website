@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/*  global fetch document window */
+/*  global fetch document  */
 
 function createTag(name, attrs) {
   const el = document.createElement(name);
@@ -26,7 +26,7 @@ async function fetchJson(url) {
     // eslint-disable-next-line no-console
     console.log(`fetching ${url}`);
     const start = new Date();
-    const resp = await fetch(url, { cache: 'no-store' });
+    const resp = await fetch(url, { cache: 'reload' });
     const json = await resp.json();
     // eslint-disable-next-line no-console
     console.log(`[${new Date() - start}ms] fetched ${url}`);
@@ -34,12 +34,6 @@ async function fetchJson(url) {
   } catch {
     return [];
   }
-}
-
-function toClassName(name) {
-  return name && typeof name === 'string'
-    ? name.toLowerCase().replace(/[^0-9a-z]/gi, '-')
-    : '';
 }
 
 function createTable(redirects) {
