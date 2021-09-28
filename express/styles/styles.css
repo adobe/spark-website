@@ -282,11 +282,6 @@ body.no-brand-header header, body.no-desktop-brand-header header {
     }
 }
 
-footer {
-
-  margin-top: 120px;
-}
-
 /* buttons */
 
 a.button:any-link {
@@ -565,6 +560,10 @@ main .section-wrapper:first-of-type {
 
 main .section-wrapper:first-of-type {
   padding: 0;
+}
+
+main .section-wrapper:last-of-type {
+  padding-bottom: 80px;
 }
 
 main .section-wrapper > div {
