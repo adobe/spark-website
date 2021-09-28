@@ -121,7 +121,7 @@ export function linkImage($elem) {
 
 function wrapSections(element) {
   document.querySelectorAll(element).forEach(($div) => {
-    if ($div.childNodes.length === 0) {
+    if ($div.childNodes.length === 0 || !$div.firstElementChild) {
       // remove empty sections
       $div.remove();
     } else if (!$div.id) {
