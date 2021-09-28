@@ -27,4 +27,5 @@ module.exports = {
     sourceType: 'module',
     requireConfigFile: false,
   },
+  plugins: ['@babel/proposal-class-properties'],
 };
