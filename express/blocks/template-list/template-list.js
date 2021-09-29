@@ -34,6 +34,7 @@ function masonrize($cells, $masonry, force) {
       const $column = createTag('div', { class: 'masonry-col' });
       columns.push({
         outerHeight: 0,
+        count: 0,
         $column,
       });
       $masonry.appendChild($column);
@@ -52,6 +53,7 @@ function masonrize($cells, $masonry, force) {
         } else {
           const calcOffsetHeight = ($image.naturalHeight / $image.naturalWidth) * colWidth;
           column.outerHeight += calcOffsetHeight;
+          column.count += 1;
         }
       }
       const $video = $cell.querySelector('video');
@@ -59,6 +61,10 @@ function masonrize($cells, $masonry, force) {
         // console.log(`video ready state ${$video.readyState}`);
         if ($video.readyState === 0) {
           incomplete = true;
+        } else {
+          const calcOffsetHeight = ($video.videoHeight / $video.videoWidth) * colWidth;
+          column.outerHeight += calcOffsetHeight;
+          column.count += 1;
         }
       }
     });
@@ -69,7 +75,7 @@ function masonrize($cells, $masonry, force) {
       setTimeout(() => {
         masonrize($cells, $masonry, true);
       }, 500);
-    }
+    } 
   }
 }
 
