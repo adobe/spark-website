@@ -16,10 +16,12 @@ import {
   createTag,
 } from '../../scripts/scripts.js';
 
-export default function decorate($block, name, doc, includeSchema = true) {
+export default function decorate($block, name, doc) {
   const $howto = $block;
   const $heading = $howto.previousElementSibling;
   const $rows = Array.from($howto.children);
+
+  const includeSchema = !$block.classList.contains('noschema');
 
   const schema = {
     '@context': 'http://schema.org',
