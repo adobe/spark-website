@@ -16,11 +16,11 @@ import {
   createTag,
 } from '../../scripts/scripts.js';
 
-export default function decorate($block, name, doc) {
+export default function decorate($block, name, doc, includeSchema = true) {
   const $howto = $block;
   const $heading = $howto.previousElementSibling;
   const $rows = Array.from($howto.children);
-  const $schema = createTag('script', { type: 'application/ld+json' });
+
   const schema = {
     '@context': 'http://schema.org',
     '@type': 'HowTo',
@@ -45,7 +45,11 @@ export default function decorate($block, name, doc) {
     $cells[1].classList.add('tip');
     $cells[0].remove();
   });
-  $schema.innerHTML = JSON.stringify(schema);
-  const $head = doc.head;
-  $head.append($schema);
+
+  if (includeSchema) {
+    const $schema = createTag('script', { type: 'application/ld+json' });
+    $schema.innerHTML = JSON.stringify(schema);
+    const $head = doc.head;
+    $head.append($schema);
+  }
 }
