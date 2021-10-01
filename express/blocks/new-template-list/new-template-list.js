@@ -36,19 +36,19 @@ class Masonry {
     this.startResizing = 0;
   }
 
-  static INCOMPLETE = 0;
+  // static INCOMPLETE = 0;
 
-  static IDENTICAL = 1;
+  // static IDENTICAL = 1;
 
-  static CHANGED = 2;
+  // static CHANGED = 2;
 
   // set up fresh grid if necessary
   setupColumns() {
-    let result = Masonry.IDENTICAL;
+    let result = 1;
     const colWidth = this.$block.classList.contains('sixcols') ? 175 : 264;
     const width = this.$block.offsetWidth;
     if (!width) {
-      return Masonry.INCOMPLETE;
+      return 0;
     }
     let numCols = Math.floor(width / colWidth);
     if (numCols < 1) numCols = 1;
@@ -63,7 +63,7 @@ class Masonry {
         });
         this.$block.appendChild($column);
       }
-      result = Masonry.CHANGED;
+      result = 2;
     }
     [this.nextColumn] = this.columns;
     return result;
@@ -93,10 +93,10 @@ class Masonry {
   draw(cells) {
     if (!cells) {
       const setup = this.setupColumns();
-      if (setup === Masonry.IDENTICAL) {
+      if (setup === 1) {
         // no redrawing needed
         return;
-      } else if (setup === Masonry.INCOMPLETE) {
+      } else if (setup === 0) {
         // setup incomplete, try again
         window.setTimeout(() => {
           this.draw(cells);
