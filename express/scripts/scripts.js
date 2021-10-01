@@ -533,7 +533,7 @@ function decorateBlocks() {
       $section.classList.add(`${blockName}-container`.replace(/--/g, '-'));
     }
     const blocksWithOptions = ['checker-board', 'new-template-list', 'template-list', 'steps', 'cards', 'quotes', 'page-list',
-      'columns', 'show-section-only', 'image-list', 'feature-list', 'how-to-steps'];
+      'columns', 'show-section-only', 'image-list', 'feature-list'];
     blocksWithOptions.forEach((b) => {
       if (blockName.startsWith(`${b}-`)) {
         const options = getOptionClasses(blockName, b);
