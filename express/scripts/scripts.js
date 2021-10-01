@@ -535,17 +535,17 @@ function decorateBlocks() {
     const blocksWithOptions = ['checker-board', 'new-template-list', 'template-list', 'steps', 'cards', 'quotes', 'page-list',
       'columns', 'show-section-only', 'image-list', 'feature-list', 'how-to-steps'];
 
-      // quick fix for how-to-carousel
-      if (blockName !== 'how-to-steps-carousel') {
-        blocksWithOptions.forEach((b) => {
-          if (blockName.startsWith(`${b}-`)) {
-            const options = getOptionClasses(blockName, b);
-            blockName = b;
-            $block.classList.add(b);
-            $block.classList.add(...options);
-          }
-        });  
-      }
+    // quick fix for how-to-carousel
+    if (blockName !== 'how-to-steps-carousel') {
+      blocksWithOptions.forEach((b) => {
+        if (blockName.startsWith(`${b}-`)) {
+          const options = getOptionClasses(blockName, b);
+          blockName = b;
+          $block.classList.add(b);
+          $block.classList.add(...options);
+        }
+      });
+    }
     $block.classList.add('block');
     $block.setAttribute('data-block-name', blockName);
   });
