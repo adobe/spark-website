@@ -53,7 +53,7 @@ function activate(block, target) {
       const picture = container.querySelector('picture');
       const img = picture.querySelector('img');
       const panelHeight = block.parentElement.offsetHeight;
-      const imgHeight = img.offsetHeight;
+      const imgHeight = img.naturalHeight;
       if (imgHeight > panelHeight) {
         picture.style.height = `${panelHeight}px`;
         container.classList.add('no-cover');

@@ -147,7 +147,7 @@ main .how-to-steps-carousel-container .icon {
   height: 56px;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 900px) {
   main .how-to-steps-carousel-container > div {
     margin: 0 88px;
     padding: 80px 88px;
@@ -169,7 +169,7 @@ main .how-to-steps-carousel-container .icon {
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1200px) {
   main .how-to-steps-carousel-container {
     display: flex;
     justify-content: center;
@@ -180,14 +180,11 @@ main .how-to-steps-carousel-container .icon {
     padding: 80px 70px;
     width: 50%;
     height: 100%;
+    max-width: 600px;
   }
 
   main .how-to-steps-carousel-container > picture > img {
     margin: 0;
-  }
-
-  main .how-to-steps-carousel-container.no-cover > div {
-    margin: 0 0 0 20px;
   }
 
   main .how-to-steps-carousel-container.no-cover > picture {
@@ -195,12 +192,6 @@ main .how-to-steps-carousel-container .icon {
   }
 
   main .how-to-steps-carousel-container.no-cover > picture > img {
-    object-fit: contain;
-  }
-}
-
-@media (min-width: 1200px) {
-  main .how-to-steps-carousel-container.no-cover > div {
-    margin: 0 120px 0 20px;
+    width: unset;
   }
 }
