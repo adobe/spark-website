@@ -6,9 +6,8 @@ main .link-list {
   display: block;
   overflow: hidden;
   margin: 40px auto; 
-  width: 100%;
   text-align: left;
-
+  padding: 0 32px;
 }
 
 main .link-list h3 {
