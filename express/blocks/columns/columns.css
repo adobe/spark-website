@@ -31,6 +31,7 @@ main .columns.top > div {
   align-items: flex-start;
 }
 
+main .columns-dark-container > div,
 main .columns-container > div {
   max-width: 1024px;
 }
