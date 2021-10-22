@@ -666,11 +666,6 @@ main .section-wrapper.steps-dark-container > div > h2 {
   margin: 0;
 }
 
-main .section-wrapper.cards-container {
-  background-color: #F1F3F4;
-  padding-top: 0;
-}
-
 main .section-wrapper .hero {
   color: initial;
 }
@@ -797,10 +792,6 @@ main .section-wrapper .hero {
     margin-left: 0;
     font-size: 13px;
     font-weight: 400;
-  }
-
-  main .section-wrapper.cards-container {
-    background-color: unset;
   }
 }
 
