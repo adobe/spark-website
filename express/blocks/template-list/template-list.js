@@ -188,7 +188,6 @@ async function decorateTemplateList($block) {
             src: $imgLink.href,
             type: 'video/mp4',
           }));
-          console.log($parent);
           $parent.replaceChild($video, $picture);
           $imgLink.remove();
           $video.addEventListener('canplay', () => {
