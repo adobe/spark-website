@@ -175,7 +175,8 @@ async function decorateTemplateList($block) {
       if (!$imgLink.href.includes('.mp4')) {
         linkImage($parent);
       } else {
-        const $picture = $tmplt.querySelector('picture');
+        let $picture = $tmplt.querySelector('picture');
+        if ($picture.parentElement.tagName === 'P') $picture = $picture.parentElement;
         if ($picture) {
           const $video = createTag('video', {
             playsinline: '',
@@ -187,6 +188,7 @@ async function decorateTemplateList($block) {
             src: $imgLink.href,
             type: 'video/mp4',
           }));
+          console.log($parent);
           $parent.replaceChild($video, $picture);
           $imgLink.remove();
           $video.addEventListener('canplay', () => {
