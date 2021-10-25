@@ -19,6 +19,7 @@
     host: 'www.adobe.com',
     byocdn: true,
     hlx3: true,
+    pushDownSelector: '#feds-header',
     plugins: [
       // METADATA ---------------------------------------------------------------------
       {
