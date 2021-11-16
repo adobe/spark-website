@@ -56,26 +56,26 @@ sitemaps:
         alternate: /tw/{path}
       china:
         source: /cn/express/query-index.json
-        destination: /sitemap-other.xml
+        destination: /express/sitemap-other.xml
         hreflang: zh-Hans
         alternate: /cn/{path}
       denmark:
         source: /dk/express/query-index.json
-        destination: /sitemap-other.xml
+        destination: /express/sitemap-other.xml
         hreflang: da
         alternate: /dk/{path}
       finland:
         source: /fi/express/query-index.json
-        destination: /sitemap-other.xml
+        destination: /express/sitemap-other.xml
         hreflang: fi
         alternate: /fi/{path}
       norway:
         source: /no/express/query-index.json
-        destination: /sitemap-other.xml
+        destination: /express/sitemap-other.xml
         hreflang: nb
         alternate: /no/{path}
       sweden:
         source: /se/express/query-index.json
-        destination: /sitemap-other.xml
+        destination: /express/sitemap-other.xml
         hreflang: sv
         alternate: /se/{path}
