@@ -36,7 +36,7 @@ sitemaps:
         alternate: /jp/{path}
       korea:
         source: /kr/express/query-index.json
-        destination: /br/express/sitemap.xml
+        destination: /kr/express/sitemap.xml
         hreflang: ko
         alternate: /kr/{path}
       netherlands:
