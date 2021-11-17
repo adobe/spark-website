@@ -4,9 +4,6 @@
     <loc>https://www.adobe.com/express/sitemap-us.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://www.adobe.com/express/sitemap-br.xml</loc>
-  </sitemap>
-  <sitemap>
     <loc>https://www.adobe.com/express/sitemap-de.xml</loc>
   </sitemap>
   <sitemap>
@@ -19,15 +16,21 @@
     <loc>https://www.adobe.com/express/sitemap-it.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://www.adobe.com/express/sitemap-kr.xml</loc>
+    <loc>https://www.adobe.com/express/sitemap-jp.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://www.adobe.com/express/sitemap-jp.xml</loc>
+    <loc>https://www.adobe.com/express/sitemap-kr.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://www.adobe.com/express/sitemap-nl.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://www.adobe.com/express/sitemap-br.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://www.adobe.com/express/sitemap-tw.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.adobe.com/express/sitemap-other.xml</loc>
   </sitemap>
 </sitemapindex>
