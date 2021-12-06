@@ -95,12 +95,11 @@ async function fgrepNextFile(queue, pattern) {
   if (path) {
     totalFiles += 1;
     try {
-      fgrep(path, pattern).then((result) => {
-        displayResult(result);
-        if (queue[0]) fgrepNextFile(queue, pattern);
-        endTime = new Date();
-        updateStatus();
-      });  
+      const result = await fgrep(path, pattern);
+      displayResult(result);
+      if (queue[0]) fgrepNextFile(queue, pattern);
+      endTime = new Date();
+      updateStatus();  
     } catch (e) {
       displayResult({pathname: path, status: 'ERROR', size: 0, found: true});
     }
