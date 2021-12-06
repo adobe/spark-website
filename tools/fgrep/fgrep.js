@@ -94,12 +94,16 @@ async function fgrepNextFile(queue, pattern) {
   const path = queue.shift();
   if (path) {
     totalFiles += 1;
-    fgrep(path, pattern).then((result) => {
-      displayResult(result);
-      if (queue[0]) fgrepNextFile(queue, pattern);
-      endTime = new Date();
-      updateStatus();
-    });
+    try {
+      fgrep(path, pattern).then((result) => {
+        displayResult(result);
+        if (queue[0]) fgrepNextFile(queue, pattern);
+        endTime = new Date();
+        updateStatus();
+      });  
+    } catch (e) {
+      displayResult({pathname: path, status: 'ERROR', size: 0, found: true});
+    }
   }
 }
 
