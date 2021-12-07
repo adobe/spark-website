@@ -112,7 +112,7 @@ async function fgrepNextFile(queue, pattern) {
       } else {
         displayError({
           pathname: path,
-          error: '404',
+          error: result.status,
         });
         endTime = new Date();
       }
