@@ -115,7 +115,6 @@ async function fgrepNextFile(queue, pattern) {
           error: '404',
         });
         endTime = new Date();
-        updateStatus();
       }
     } catch (e) {
       displayError({
@@ -123,6 +122,7 @@ async function fgrepNextFile(queue, pattern) {
         error: e.message,
       });
     }
+    updateStatus();
     if (queue[0]) fgrepNextFile(queue, pattern);
   }
 }
