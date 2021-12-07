@@ -9,6 +9,9 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+
+/* global document fetch DOMParser */
+
 let sitemapURLs = [];
 let totalSize = 0;
 let totalFiles = 0;
@@ -79,6 +82,14 @@ async function fgrep(pathname, pattern) {
   });
 }
 
+function displayError(result) {
+  const resultDisplay = document.getElementById('results');
+  const p = document.createElement('p');
+  p.classList.add('error');
+  p.innerHTML = `<a href="${result.pathname}">${result.pathname}</a> (${result.error})`;
+  resultDisplay.appendChild(p);
+}
+
 function displayResult(result) {
   const resultDisplay = document.getElementById('results');
   totalSize += result.size;
@@ -96,13 +107,23 @@ async function fgrepNextFile(queue, pattern) {
     totalFiles += 1;
     try {
       const result = await fgrep(path, pattern);
-      displayResult(result);
-      if (queue[0]) fgrepNextFile(queue, pattern);
-      endTime = new Date();
-      updateStatus();  
+      if (result.status === 200) {
+        displayResult(result);
+      } else {
+        displayError({
+          pathname: path,
+          error: '404',
+        });
+        endTime = new Date();
+        updateStatus();
+      }
     } catch (e) {
-      displayResult({pathname: path, status: 'ERROR', size: 0, found: true});
+      displayError({
+        pathname: path,
+        error: e.message,
+      });
     }
+    if (queue[0]) fgrepNextFile(queue, pattern);
   }
 }
 
