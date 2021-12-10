@@ -20,6 +20,7 @@ let totalFilesMatched = 0;
 let startTime = new Date();
 let endTime = 0;
 let origin = window.location.origin;
+let suffix = '';
 
 function humanFileSize(bytes, si = false, dp = 1) {
   let numBytes = bytes;
@@ -64,13 +65,14 @@ async function loadSitemap(sitemapURL) {
 }
 
 function updateStatus() {
+  endTime = new Date();
   const status = document.getElementById('status');
   const seconds = Math.floor((endTime - startTime) / 100) / 10;
   status.innerHTML = `Matched Files: ${totalFilesMatched} / ${totalFilesScanned} / ${totalFiles} (${humanFileSize(totalSize, true)}) ${seconds}s`;
 }
 
 async function fgrep(pathname, pattern) {
-  const resp = await fetch(`${origin}${pathname}`);
+  const resp = await fetch(`${origin}${pathname}${suffix ? `?${suffix}` : ''}`);
   const text = await resp.text();
   let found = false;
   if (text.indexOf(pattern) >= 0) {
@@ -90,7 +92,7 @@ function displayError(result) {
   const resultDisplay = document.getElementById('results');
   const p = document.createElement('p');
   p.classList.add('error');
-  p.innerHTML = `<a href="${result.pathname}">${result.pathname}</a> (${result.error})`;
+  p.innerHTML = `<a href="${result.pathname}">${result.pathname}${suffix ? `?${suffix}` : ''}</a> (${result.error})`;
   resultDisplay.appendChild(p);
 }
 
@@ -100,7 +102,7 @@ function displayResult(result) {
   totalFilesMatched += result.found ? 1 : 0;
   if (result.found) {
     const p = document.createElement('p');
-    p.innerHTML = `${humanFileSize(result.size, true).padStart(9, ' ')} <a href="${result.pathname}">${result.pathname}</a> (${result.status})`;
+    p.innerHTML = `${humanFileSize(result.size, true).padStart(9, ' ')} <a href="${result.pathname}">${result.pathname}${suffix ? `?${suffix}` : ''}</a> (${result.status})`;
     resultDisplay.appendChild(p);
   }
 }
@@ -118,7 +120,6 @@ async function fgrepNextFile(queue, pattern) {
           pathname: path,
           error: result.status,
         });
-        endTime = new Date();
       }
     } catch (e) {
       displayError({
@@ -148,6 +149,7 @@ export async function run() {
   endTime = new Date();
   document.getElementById('results').textContent = '';
 
+  suffix = new URLSearchParams(window.location.search).get('suffix');
   const sitemapParam = new URLSearchParams(window.location.search).get('sitemap');
   const sitemapRoot = sitemapParam || `/express/sitemap.xml`;
   const sitemapURL = new URL(sitemapRoot, window.location.href);
