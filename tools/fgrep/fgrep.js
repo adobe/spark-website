@@ -15,9 +15,11 @@
 let sitemapURLs = [];
 let totalSize = 0;
 let totalFiles = 0;
+let totalFilesScanned = 0;
 let totalFilesMatched = 0;
 let startTime = new Date();
 let endTime = 0;
+let origin = window.location.origin;
 
 function humanFileSize(bytes, si = false, dp = 1) {
   let numBytes = bytes;
@@ -42,7 +44,7 @@ function humanFileSize(bytes, si = false, dp = 1) {
 }
 
 async function loadSitemap(sitemapURL) {
-  const resp = await fetch(sitemapURL);
+  const resp = await fetch(`${origin}${sitemapURL}`);
   const xml = await resp.text();
   const sitemap = new DOMParser().parseFromString(xml, 'text/xml');
   const subSitemaps = [...sitemap.querySelectorAll('sitemap loc')];
@@ -50,23 +52,25 @@ async function loadSitemap(sitemapURL) {
     const loc = subSitemaps[i];
     const subSitemapURL = new URL(loc.textContent);
     // eslint-disable-next-line no-await-in-loop
-    await loadSitemap(subSitemapURL.pathname);
+    await loadSitemap(`${subSitemapURL.pathname}`);
   }
   const urlLocs = sitemap.querySelectorAll('url loc');
   urlLocs.forEach((loc) => {
     const locURL = new URL(loc.textContent);
     sitemapURLs.push(locURL.pathname);
+    totalFiles += 1;
   });
+  updateStatus();
 }
 
 function updateStatus() {
   const status = document.getElementById('status');
   const seconds = Math.floor((endTime - startTime) / 100) / 10;
-  status.innerHTML = `Matched Files: ${totalFilesMatched} / ${totalFiles} (${humanFileSize(totalSize, true)}) ${seconds}s`;
+  status.innerHTML = `Matched Files: ${totalFilesMatched} / ${totalFilesScanned} / ${totalFiles} (${humanFileSize(totalSize, true)}) ${seconds}s`;
 }
 
 async function fgrep(pathname, pattern) {
-  const resp = await fetch(pathname);
+  const resp = await fetch(`${origin}${pathname}`);
   const text = await resp.text();
   let found = false;
   if (text.indexOf(pattern) >= 0) {
@@ -104,7 +108,7 @@ function displayResult(result) {
 async function fgrepNextFile(queue, pattern) {
   const path = queue.shift();
   if (path) {
-    totalFiles += 1;
+    totalFilesScanned += 1;
     try {
       const result = await fgrep(path, pattern);
       if (result.status === 200) {
@@ -138,13 +142,18 @@ async function fgrepFiles(sitemap, pattern, connections) {
 export async function run() {
   sitemapURLs = [];
   totalSize = 0;
-  totalFiles = 0;
+  totalFilesScanned = 0;
   totalFilesMatched = 0;
   startTime = new Date();
   endTime = new Date();
   document.getElementById('results').textContent = '';
 
-  await loadSitemap('/express/sitemap.xml');
+  const sitemapParam = new URLSearchParams(window.location.search).get('sitemap');
+  const sitemapRoot = sitemapParam || `/express/sitemap.xml`;
+  const sitemapURL = new URL(sitemapRoot, window.location.href);
+  origin = sitemapURL.origin;
+  updateStatus();
+  await loadSitemap(sitemapURL.pathname);
   const resultDisplay = document.body;
   const sitemap = sitemapURLs;
   let pattern = document.getElementById('input').value;
