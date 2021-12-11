@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-/* global document fetch DOMParser */
+/* global document fetch DOMParser window */
 
 let sitemapURLs = [];
 let totalSize = 0;
@@ -19,7 +19,7 @@ let totalFilesScanned = 0;
 let totalFilesMatched = 0;
 let startTime = new Date();
 let endTime = 0;
-let origin = window.location.origin;
+let { origin } = window.location;
 let suffix = '';
 
 function humanFileSize(bytes, si = false, dp = 1) {
@@ -44,6 +44,34 @@ function humanFileSize(bytes, si = false, dp = 1) {
   return `${numBytes.toFixed(dp)} ${units[u]}`;
 }
 
+function updateStatus() {
+  endTime = new Date();
+  const status = document.getElementById('status');
+  const seconds = Math.floor((endTime - startTime) / 100) / 10;
+  status.innerHTML = `Matched Files: ${totalFilesMatched} / ${totalFilesScanned} / ${totalFiles} (${humanFileSize(totalSize, true)}) ${seconds}s`;
+}
+
+async function loadJSON(jsonURL) {
+  const resp = await fetch(jsonURL);
+  const json = await resp.json();
+  if (json.data) {
+    json.data.forEach((row) => {
+      const keys = Object.keys(row);
+      keys.forEach((key) => {
+        try {
+          const url = new URL(row[key]);
+          sitemapURLs.push(url.pathname);
+          totalFiles += 1;
+          origin = url.origin;
+        } catch (e) {
+          console.log(e);
+        }
+      });
+    });
+  }
+  updateStatus();
+}
+
 async function loadSitemap(sitemapURL) {
   const resp = await fetch(`${origin}${sitemapURL}`);
   const xml = await resp.text();
@@ -62,13 +90,6 @@ async function loadSitemap(sitemapURL) {
     totalFiles += 1;
   });
   updateStatus();
-}
-
-function updateStatus() {
-  endTime = new Date();
-  const status = document.getElementById('status');
-  const seconds = Math.floor((endTime - startTime) / 100) / 10;
-  status.innerHTML = `Matched Files: ${totalFilesMatched} / ${totalFilesScanned} / ${totalFiles} (${humanFileSize(totalSize, true)}) ${seconds}s`;
 }
 
 async function fgrep(pathname, pattern) {
@@ -150,20 +171,25 @@ export async function run() {
   document.getElementById('results').textContent = '';
 
   suffix = new URLSearchParams(window.location.search).get('suffix');
-  const sitemapParam = new URLSearchParams(window.location.search).get('sitemap');
-  const sitemapRoot = sitemapParam || `/express/sitemap.xml`;
-  const sitemapURL = new URL(sitemapRoot, window.location.href);
-  origin = sitemapURL.origin;
-  updateStatus();
-  await loadSitemap(sitemapURL.pathname);
-  const resultDisplay = document.body;
+  const json = new URLSearchParams(window.location.search).get('json');
+  if (json) {
+    updateStatus();
+    await loadJSON(json);
+  } else {
+    const sitemapParam = new URLSearchParams(window.location.search).get('sitemap');
+    const sitemapRoot = sitemapParam || '/express/sitemap.xml';
+    const sitemapURL = new URL(sitemapRoot, window.location.href);
+    origin = sitemapURL.origin;
+    updateStatus();
+    await loadSitemap(sitemapURL.pathname);
+  }
   const sitemap = sitemapURLs;
   let pattern = document.getElementById('input').value;
   let connections = 10;
   if (pattern.includes(' -c ')) {
     [pattern, connections] = pattern.split(' -c ');
   }
-  fgrepFiles(sitemap, pattern, +connections, resultDisplay);
+  fgrepFiles(sitemap, pattern, +connections);
 }
 
 const runButton = document.getElementById('run');
